@@ -57,10 +57,19 @@
 	},
 	"expanded_folders":
 	[
-		"/C/Users/iulia/Desktop/Mox"
+		"/C/Users/iulia/Desktop/Mox",
+		"/C/Users/iulia/Desktop/Mox/Project Files"
 	],
 	"file_history":
 	[
+		"/C/Users/iulia/Desktop/Mox/Project Files/package.json",
+		"/C/Users/iulia/Desktop/Mox/Project Files/gulpfile.js",
+		"/C/Users/iulia/Desktop/Mox/Project Files/GulpBoilerplate/bower.json",
+		"/C/Users/iulia/Desktop/Mox/Project Files/bower.json",
+		"/C/Users/iulia/Desktop/Mox/Project Files/GulpBoilerplate/package.json",
+		"/C/Users/iulia/Desktop/Mox/Materials/scram_plan.md",
+		"/C/Users/iulia/Desktop/Mox/Documentation/index.html",
+		"/C/Users/iulia/Desktop/Mox/Materials/ideas.md",
 		"/C/Users/iulia/Work/ngAudio/app/angular.audio.js",
 		"/C/Users/iulia/Work/ngAudio/audioplayer.sublime-project",
 		"/C/Program Files (x86)/Crysis 3/system.cfg",

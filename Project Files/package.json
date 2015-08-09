@@ -1,6 +1,6 @@
 {
   "name": "mox-under-construction-template",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Coming soon / Under Construction template",
   "main": "index.js",
   "scripts": {
@@ -20,5 +20,26 @@
   "bugs": {
     "url": "https://github.com/jail1/xom-un-constr-tem/issues"
   },
-  "homepage": "https://github.com/jail1/xom-un-constr-tem#readme"
+  "homepage": "https://github.com/jail1/xom-un-constr-tem#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "bower": "^1.3.12",
+    "gulp": "^3.8.11",
+    "gulp-autoprefixer": "^2.1.0",
+    "gulp-compass": "^2.0.3",
+    "gulp-concat": "^2.5.2",
+    "gulp-connect": "^2.2.0",
+    "gulp-if": "^1.2.5",
+    "gulp-jshint": "^1.9.4",
+    "gulp-jsonminify": "0.0.2",
+    "gulp-minify-css": "^1.0.0",
+    "gulp-minify-html": "^1.0.1",
+    "gulp-notify": "^2.2.0",
+    "gulp-plumber": "^1.0.0",
+    "gulp-uglify": "^1.1.0",
+    "gulp-util": "^3.0.4",
+    "jquery": "^2.1.3",
+    "jshint-stylish": "^1.0.1",
+    "plumber": "^0.4.8"
+  }
 }
