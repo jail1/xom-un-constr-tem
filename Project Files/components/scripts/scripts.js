@@ -41,7 +41,6 @@
       var progressFadeoutDelay = 800;
       
       function hidePreloader() {
-          console.log('Inside hidePreloader.')
           // # Cache the progress element.
           var progressAnimation = $('#progress-animation');
           var progressElement   = $('#progress');

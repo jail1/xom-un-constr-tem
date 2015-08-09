@@ -8,3 +8,5 @@ scram_plan.md
 /Materials/*
 /Project\ Files/components/bower/*
 /Project\ Files/builds/production/*
+/Project\ Files/builds/production/fonts/*
+/Project\ Files/builds/development/fonts/*

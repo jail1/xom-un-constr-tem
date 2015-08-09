@@ -6,12 +6,12 @@
 // Nodejs Requires 
 // ##################################################################################################################################
 
-var gulp 		= require('gulp'),                  //* 
-	gutil       = require('gulp-util'),             //******** Utilities  
-	gulpif      = require('gulp-if'),               //*
-	concat      = require('gulp-concat'),           //*    
-	connect     = require('gulp-connect'),          //*   
-	browserSync = require('browser-sync'),          //*   
+var gulp 			= require('gulp'),                  //* 
+	gutil       	= require('gulp-util'),             //******** Utilities  
+	gulpif      	= require('gulp-if'),               //*
+	concat      	= require('gulp-concat'),           //*    
+	connect     	= require('gulp-connect'),          //*   
+	browserSync 	= require('browser-sync'),          //*   
 
 	plumber			= require('gulp-plumber'),          //*
 	jshint			= require('gulp-jshint'),           //******** Linting  
@@ -26,14 +26,12 @@ var gulp 		= require('gulp'),                  //*
 	jsonminify  	= require('gulp-jsonminify'),       //*    
 	guglify			= require('gulp-uglify');           //*
 	
-
-
-var env, jsSources, sassSources, staticSources, jsonSources, sassStyle, outputDir;
+var env, jsSources, sassSources, staticSources, fontsSources, jsonSources, sassStyle, outputDir, bootsrapPath, fontAwesomePath, ioniconsPath;
 var env = process.env.NODE_ENV || 'development';
 var prod = env === 'development' ? false : true;
 
 if(env === 'development') {
-	outputDir = './builds/development/';
+	outputDir = 'builds/development/';
 	sassStyle = 'expanded';
 } else {
 	outputDir = 'builds/production/';
@@ -46,12 +44,27 @@ console.warn('Current node env is ', outputDir);
 // File locations
 // ##################################################################################################################################
 
+	bootsrapPath    = 'components/bower/bootstrap-sass/assets/'; 
+	fontAwesomePath = 'components/bower/fontawesome/';
+	ioniconsPath    = 'components/bower/ionicons/';
+
     jsSources	  = ['components/bower/jquery/dist/jquery.js',
-				 	 'components/scripts/*.js'],
+    				 'components/bower/animateCSS/dist/jquery.animatecss.js',
+    				 bootsrapPath + 'javascripts/bootstrap/transition.js',
+    				 bootsrapPath + 'javascripts/bootstrap/tooltip.js',
+    				 bootsrapPath + 'javascripts/bootstrap/popover.js',
+    				 bootsrapPath + 'javascripts/bootstrap/modal.js',
+    				 bootsrapPath + 'javascripts/bootstrap/alert.js',
+				 	 'components/scripts/*.js'];
 
- 	sassSources	  = ['components/sass/styles.scss'],
+ 	fontsSources  = [bootsrapPath    + 'fonts/bootstrap/*.{ttf,woff,woff2,eot,svg}',
+				     fontAwesomePath + 'fonts/*.{ttf,woff,woff2,eot,svg,otf}',
+				     ioniconsPath    + 'fonts/*.{ttf,woff,eot,svg}'];
 
- 	staticSources = [outputDir + '*.html', outputDir + '*.php'],
+ 	sassSources	  = [bootsrapPath + 'stylesheets/_bootstrap.scss',  
+					'components/sass/styles.scss'];
+
+ 	staticSources = [outputDir + '*.html', outputDir + '*.php'];
  	
  	jsonSources   = [outputDir + 'js/*.json'];
 
@@ -69,14 +82,16 @@ gulp.task('js', function() {
 });
 
 // ##################################################################################################################################
-// JavaScript Lint Task
+// JavaScript Lint Task (Disabled for now!)
 // ##################################################################################################################################
 
+/*
 gulp.task('js-lint', function() {
 	gulp.src(jsSources)
 		.pipe(jshint())
 		.pipe(jshint.reporter(stylish))
 });
+*/
 
 // ##################################################################################################################################
 // Compass Task
@@ -116,6 +131,16 @@ gulp.task('static', function() {
 		.pipe(gulpif(prod, minifyhtml()))
 		.pipe(gulpif(prod, gulp.dest(outputDir)))
 		.pipe(connect.reload());
+});
+
+// ##################################################################################################################################
+// Move fonts Task
+// ##################################################################################################################################
+
+gulp.task('fonts', function() {
+	gulp.src(fontsSources)
+		.pipe(gulp.dest('builds/development/fonts/'))
+		.pipe(gulp.dest('builds/production/fonts/'));
 });
 
 // ##################################################################################################################################
@@ -191,7 +216,7 @@ gulp.task('browser-sync', function() {
 // ##################################################################################################################################
 
 gulp.task('default2', ['static', 'js-lint', 'json', 'js', 'compass', 'images', 'connect', 'watch']); 
-gulp.task('default', ['static', 'js-lint', 'json', 'js', 'compass', 'images', 'browser-sync']); 
+gulp.task('default', ['static', 'json', 'js', 'compass', 'fonts', 'images', 'browser-sync']); 
 // Process all of this. Yell 'gulp' in console.
 
 // ##################################################################################################################################

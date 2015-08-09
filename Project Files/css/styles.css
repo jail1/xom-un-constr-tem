@@ -319,7 +319,7 @@ body {
   content: attr(data-time);
   position: absolute;
   top: 0;
-  color: red;
+  color: #CC0000;
   background: #111;
   overflow: hidden;
   width: 720px;
