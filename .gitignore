@@ -3,6 +3,7 @@ node_modules
 bower_modules
 .tmp
 .sass-cache
+
 scram_plan.md
 /Materials/*
 /Project\ Files/components/bower/*
