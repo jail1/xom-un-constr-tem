@@ -178,74 +178,73 @@
       }
     },  
 
-    initPlugins: function() {
-        // NivoLightbox - will be changed with something else.
-        $('.nivoLightbox').nivoLightbox({
-          effect: 'fade',                             // The effect to use when showing the lightbox
-          theme: 'default',                           // The lightbox theme to use
-          keyboardNav: true,                          // Enable/Disable keyboard navigation (left/right/escape)
-          clickOverlayToClose: true,                  // If false clicking the "close" button will be the only way to close the lightbox
-          errorMessage: 'The requested content cannot be loaded. Please try again later.' // Error message when content can't be loaded
-        });
+  initPlugins: function() {
+      // NivoLightbox - will be changed with something else.
+      $('.nivoLightbox').nivoLightbox({
+        effect: 'fade',                             // The effect to use when showing the lightbox
+        theme: 'default',                           // The lightbox theme to use
+        keyboardNav: true,                          // Enable/Disable keyboard navigation (left/right/escape)
+        clickOverlayToClose: true,                  // If false clicking the "close" button will be the only way to close the lightbox
+        errorMessage: 'The requested content cannot be loaded. Please try again later.' // Error message when content can't be loaded
+      });
 
-        // RESPONSIVE VIDEO - FITVIDS
-        $(".video-container").fitVids();
+      // RESPONSIVE VIDEO - FITVIDS
+      $(".video-container").fitVids();
 
-        // FLEXSLIDER
-        $('.flexslider').flexslider({
-          animation: "fade",
-          animationLoop: true,
-          slideshowSpeed: 7000,
-          animationSpeed: 600,
-          controlNav: false,
-          directionNav: false,
-          keyboard: false,
-          start: function(slider){
-            $('body').removeClass('loading');
-          }
-        });
-
-        // COUNTDOWN
-        $('#clock').countdown('2015/08/1 12:00:00').on('update.countdown', function(event) {
-          var $this = $(this).html(event.strftime('<div class="counter-container"><div class="counter-box first"><div class="number">%-D</div><span>Day%!d</span></div><div class="counter-box"><div class="number">%H</div><span>Hours</span></div><div class="counter-box"><div class="number">%M</div><span>Minutes</span></div><div class="counter-box last"><div class="number">%S</div><span>Seconds</span></div></div>'
-          ));
-        });
-
-        // MAILCHIMP
-        $('.mailchimp').ajaxChimp({
-          callback: mailchimpCallback,
-          url: "//bluminethemes.us9.list-manage.com/subscribe/post?u=dae5eaf00c5b131b0e3561c00&amp;id=9809da9e33" //Replace this with your own mailchimp post URL. Don't remove the "". Just paste the url inside "".  
-        });
-
-        function mailchimpCallback(resp) {
-           if (resp.result === 'success') {
-            $('.success-message').html(resp.msg).fadeIn(1000);
-            $('.error-message').fadeOut(500);
-
-          } else if(resp.result === 'error') {
-            $('.error-message').html(resp.msg).fadeIn(1000);
-          }  
+      // FLEXSLIDER
+      $('.flexslider').flexslider({
+        animation: "fade",
+        animationLoop: true,
+        slideshowSpeed: 7000,
+        animationSpeed: 600,
+        controlNav: false,
+        directionNav: false,
+        keyboard: false,
+        start: function(slider){
+          $('body').removeClass('loading');
         }
+      });
 
-        $('#email').focus(function(){
-          $('.error-message').fadeOut();
-          $('.success-message').fadeOut();
-        });
+      // COUNTDOWN
+      $('#clock').countdown('2015/08/1 12:00:00').on('update.countdown', function(event) {
+        var $this = $(this).html(event.strftime('<div class="counter-container"><div class="counter-box first"><div class="number">%-D</div><span>Day%!d</span></div><div class="counter-box"><div class="number">%H</div><span>Hours</span></div><div class="counter-box"><div class="number">%M</div><span>Minutes</span></div><div class="counter-box last"><div class="number">%S</div><span>Seconds</span></div></div>'
+        ));
+      });
 
-        $('#email').keydown(function(){
-          $('.error-message').fadeOut();
-          $('.success-message').fadeOut();
-        });
+      // MAILCHIMP
+      $('.mailchimp').ajaxChimp({
+        callback: mailchimpCallback,
+        url: "//bluminethemes.us9.list-manage.com/subscribe/post?u=dae5eaf00c5b131b0e3561c00&amp;id=9809da9e33" //Replace this with your own mailchimp post URL. Don't remove the "". Just paste the url inside "".  
+      });
 
-        $("#email").on( 'click', function() {
-          $("#email").val('');
-        });
+      function mailchimpCallback(resp) {
+         if (resp.result === 'success') {
+          $('.success-message').html(resp.msg).fadeIn(1000);
+          $('.error-message').fadeOut(500);
 
-        // PLACEHOLDER
-        $('input, textarea').placeholder();
+        } else if(resp.result === 'error') {
+          $('.error-message').html(resp.msg).fadeIn(1000);
+        }  
+      }
 
+      $('#email').focus(function(){
+        $('.error-message').fadeOut();
+        $('.success-message').fadeOut();
+      });
+
+      $('#email').keydown(function(){
+        $('.error-message').fadeOut();
+        $('.success-message').fadeOut();
+      });
+
+      $("#email").on( 'click', function() {
+        $("#email").val('');
+      });
+
+      // PLACEHOLDER
+      $('input, textarea').placeholder();
     }
-      
+
   }; // # End initialize.
 
 // # 1. Give the body a class of .mobile if views from a mobile device. Very useful later on.
