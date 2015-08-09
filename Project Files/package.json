@@ -1,0 +1,24 @@
+{
+  "name": "mox-under-construction-template",
+  "version": "1.0.0",
+  "description": "Coming soon / Under Construction template",
+  "main": "index.js",
+  "scripts": {
+    "test": "tdd"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jail1/xom-un-constr-tem.git"
+  },
+  "keywords": [
+    "Under",
+    "Construction",
+    "Template"
+  ],
+  "author": "Iacob Silviu - Iulian@Blissterra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jail1/xom-un-constr-tem/issues"
+  },
+  "homepage": "https://github.com/jail1/xom-un-constr-tem#readme"
+}

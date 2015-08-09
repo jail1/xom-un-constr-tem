@@ -1,0 +1,25 @@
+{
+  "name": "Mox - Under Construction Template",
+  "version": "1.0.0",
+  "description": "Coming soon / Under Construction template",
+  "main": "index.js",
+  "keywords": [
+    "Under",
+    "Construction",
+    "Template",
+    "Comming",
+    "Soon"
+  ],
+  "authors": [
+    "Iacob Silviu - Iulian@Blissterra"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/jail1/xom-un-constr-tem",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
