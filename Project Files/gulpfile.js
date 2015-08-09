@@ -166,8 +166,10 @@ gulp.task('connect', function() {
 // Browser Sync (~ Server and Workflow ~) Task
 // ##################################################################################################################################
 
-gulp.task('sass-watch', ['compass'], browserSync.reload);
-gulp.task('js-watch', ['js'], browserSync.reload);
+// # Separate watchers for the browser-sync watcher.
+gulp.task('bs-sass-watch', ['compass'], browserSync.reload);
+gulp.task('bs-js-watch', ['js'], browserSync.reload);
+gulp.task('bs-static-watch', ['static'], browserSync.reload);
 
 gulp.task('browser-sync', function() {
 	browserSync.init({
@@ -175,8 +177,13 @@ gulp.task('browser-sync', function() {
 			baseDir: outputDir + '/'
 		}
 	});
-	gulp.watch(jsSources, ['js-watch']);
-	gulp.watch(sassSources, ['sass-watch']);
+
+	gulp.watch('components/sass/*.scss', ['compass']);
+	gulp.watch('builds/development/js/*.json', ['json']);
+
+	gulp.watch('builds/development/*.html', ['bs-static-watch']);
+	gulp.watch(jsSources, ['bs-js-watch']);
+	gulp.watch('components/sass/*.scss', ['bs-sass-watch']);
 });
 
 // ##################################################################################################################################

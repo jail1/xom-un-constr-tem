@@ -1,166 +1,4 @@
-@import url("http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900");
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font: inherit;
-  font-size: 100%;
-  vertical-align: baseline;
-}
 
-html {
-  line-height: 1;
-}
-
-ol, ul {
-  list-style: none;
-}
-
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-
-caption, th, td {
-  text-align: left;
-  font-weight: normal;
-  vertical-align: middle;
-}
-
-q, blockquote {
-  quotes: none;
-}
-q:before, q:after, blockquote:before, blockquote:after {
-  content: "";
-  content: none;
-}
-
-a img {
-  border: none;
-}
-
-article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {
-  display: block;
-}
-
-*,
-*:before,
-*:after {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  outline: 0;
-  box-sizing: border-box;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-html,
-body {
-  height: 100%;
-}
-
-body {
-  font: 400 16px/1.5 'Lato', sans-serif;
-  background: #111;
-  color: #fff;
-}
-
-#progress {
-  height: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #CC0000;
-  z-index: 10001;
-}
-#progress #progress-animation {
-  width: 50px;
-  height: 50px;
-  background: transparent;
-  position: relative;
-  left: 50%;
-  top: 50%;
-  transform: translateY(-50%) translateX(-50%);
-  border-radius: 50%;
-  border: 2px solid white;
-  background: white;
-  animation: out-circle 1s ease-in-out infinite;
-}
-#progress #progress-animation:before {
-  content: '';
-  display: block;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translateY(-50%) translateX(-50%);
-  width: 30px;
-  height: 30px;
-  background: #e74c3c;
-  border-radius: 50%;
-  border: 2px solid #e74c3c;
-  animation: inner-circle 1s ease-in-out infinite;
-}
-#progress #progress-animation #dots {
-  height: 100%;
-  width: 100%;
-  position: relative;
-  animation: rotate 1s linear infinite;
-}
-#progress #progress-animation #dots:before, #progress #progress-animation #dots:after {
-  display: block;
-  content: '';
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: white;
-  position: absolute;
-  top: calc(50% - 10px);
-}
-#progress #progress-animation #dots:before {
-  left: -35px;
-}
-#progress #progress-animation #dots:after {
-  right: -35px;
-}
-@keyframes out-circle {
-  0%, 100% {
-    border-width: 4px;
-  }
-  50% {
-    border-width: 12px;
-  }
-}
-@keyframes inner-circle {
-  0%, 100% {
-    border-width: 2px;
-  }
-  40% {
-    border-width: 12px;
-  }
-}
-@keyframes rotate {
-  0% {
-    transform: rotateZ(0deg);
-  }
-  100% {
-    transform: rotateZ(360deg);
-  }
-}
 .glitch-sw {
   display: block;
   position: fixed;
@@ -175,17 +13,14 @@ body {
   opacity: 0.15;
   transition: opacity 0.15s;
 }
-
 .glitch-sw:hover {
   opacity: 1;
 }
-
 .glitch-sw a.sw {
   display: block;
   width: 100%;
   height: 100%;
 }
-
 .glitch-sw:before {
   display: block;
   content: '';
@@ -197,7 +32,6 @@ body {
   top: 0;
   left: 5px;
 }
-
 .wrap {
   position: relative;
   z-index: 1;
@@ -205,7 +39,6 @@ body {
   height: 100%;
   overflow: hidden;
 }
-
 .figure {
   display: block;
   position: absolute;
@@ -222,7 +55,6 @@ body {
   border-left: 100px solid transparent;
   border-bottom: 0 solid transparent;
 }
-
 .figure:before {
   display: block;
   content: '';
@@ -238,7 +70,6 @@ body {
   border-left: 90px solid transparent;
   border-bottom: 0 solid transparent;
 }
-
 .figure-mask {
   display: block;
   position: absolute;
@@ -255,7 +86,6 @@ body {
   border-left: 100px solid #111;
   border-bottom: 0 solid transparent;
 }
-
 .clock {
   display: block;
   position: absolute;
@@ -270,7 +100,6 @@ body {
   margin: auto;
   cursor: default;
 }
-
 .clock span {
   display: block;
   position: relative;
@@ -278,12 +107,10 @@ body {
   font-size: 128px;
   line-height: 1;
 }
-
 .clock.is-off {
   -webkit-animation: is-off 2s linear infinite !important;
   animation: is-off 2s linear infinite !important;
 }
-
 .glitch:before {
   position: absolute;
   z-index: 999999;
@@ -295,9 +122,8 @@ body {
   -webkit-animation: bg-move 2s ease-out infinite;
   animation: bg-move 2s ease-out infinite;
   background-size: 100% 8px;
-  background-image: linear-gradient(0, rgba(255, 255, 255, 0.05) 10%, transparent 10%, transparent 50%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.05) 60%, transparent 60%, transparent);
+  background-image: linear-gradient(0, rgba(255,255,255,0.05) 10%, transparent 10%, transparent 50%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.05) 60%, transparent 60%, transparent);
 }
-
 .glitch .figure,
 .glitch .figure-mask {
   transform: skewX(0deg);
@@ -305,42 +131,37 @@ body {
   -webkit-animation: tr-bag 4s linear infinite;
   animation: tr-bag 4s linear infinite;
 }
-
 .glitch .clock {
   transform: skewX(0deg);
   transform: scaleY(1);
   -webkit-animation: clock-bag 4s linear infinite;
   animation: clock-bag 4s linear infinite;
 }
-
 .glitch .clock span:before,
 .glitch .clock span:after {
   display: block;
   content: attr(data-time);
   position: absolute;
   top: 0;
-  color: red;
+  color: $jamColor;
   background: #111;
   overflow: hidden;
   width: 720px;
   height: 128px;
   clip: rect(0, 900px, 0, 0);
 }
-
 .glitch .clock span:before {
   left: -2px;
   text-shadow: 2px 0 #00f;
   -webkit-animation: c2 1s infinite linear alternate-reverse;
   animation: c2 1s infinite linear alternate-reverse;
 }
-
 .glitch .clock span:after {
   left: 3px;
   text-shadow: -2px 0 #f00;
   -webkit-animation: c1 2s infinite linear alternate-reverse;
   animation: c1 2s infinite linear alternate-reverse;
 }
-
 @-moz-keyframes is-off {
   0% {
     opacity: 1;
