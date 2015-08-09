@@ -6,11 +6,12 @@
 // Nodejs Requires 
 // ##################################################################################################################################
 
-var gulp 			= require('gulp'),                  //* 
-	gutil 			= require('gulp-util'),             //******** Utilities  
-	gulpif 			= require('gulp-if'),               //*
-	concat			= require('gulp-concat'),           //*    
-	connect			= require('gulp-connect'),          //*     
+var gulp 		= require('gulp'),                  //* 
+	gutil       = require('gulp-util'),             //******** Utilities  
+	gulpif      = require('gulp-if'),               //*
+	concat      = require('gulp-concat'),           //*    
+	connect     = require('gulp-connect'),          //*   
+	browserSync = require('browser-sync'),          //*   
 
 	plumber			= require('gulp-plumber'),          //*
 	jshint			= require('gulp-jshint'),           //******** Linting  
@@ -27,7 +28,7 @@ var gulp 			= require('gulp'),                  //*
 	
 
 
-var env, coffeeSources, jsSources, sassSources, staticSources, jsonSources, sassStyle, outputDir;
+var env, jsSources, sassSources, staticSources, jsonSources, sassStyle, outputDir;
 var env = process.env.NODE_ENV || 'development';
 var prod = env === 'development' ? false : true;
 
@@ -160,10 +161,28 @@ gulp.task('connect', function() {
 });
 
 // ##################################################################################################################################
+// Browser Sync (~ Server and Workflow ~) Task
+// ##################################################################################################################################
+
+gulp.task('sass-watch', ['compass'], browserSync.reload);
+gulp.task('js-watch', ['js'], browserSync.reload);
+
+gulp.task('browser-sync', function() {
+	browserSync.init({
+		server: {
+			baseDir: outputDir + '/'
+		}
+	});
+	gulp.watch(jsSources, ['js-watch']);
+	gulp.watch(sassSources, ['sass-watch']);
+});
+
+// ##################################################################################################################################
 // Default Task
 // ##################################################################################################################################
 
-gulp.task('default', ['static', 'js-lint', 'json', 'js', 'compass', 'images', 'connect', 'watch']); 
+gulp.task('default2', ['static', 'js-lint', 'json', 'js', 'compass', 'images', 'connect', 'watch']); 
+gulp.task('default', ['static', 'js-lint', 'json', 'js', 'compass', 'images', 'browser-sync']); 
 // Process all of this. Yell 'gulp' in console.
 
 // ##################################################################################################################################

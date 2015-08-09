@@ -5,3 +5,4 @@ bower_modules
 .sass-cache
 scram_plan.md
 /Materials/*
+/Project \Files/components/bower/*
