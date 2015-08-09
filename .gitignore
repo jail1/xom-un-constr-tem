@@ -3,7 +3,5 @@ node_modules
 bower_modules
 .tmp
 .sass-cache
-mox-comming-soon.sublime-project
-mox-comming-soon.sublime-workspace
 scram_plan.md
-./Materials
+./Materials/*
