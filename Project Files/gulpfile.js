@@ -32,7 +32,7 @@ var env = process.env.NODE_ENV || 'development';
 var prod = env === 'development' ? false : true;
 
 if(env === 'development') {
-	outputDir = 'builds/development/';
+	outputDir = './builds/development/';
 	sassStyle = 'expanded';
 } else {
 	outputDir = 'builds/production/';
@@ -43,12 +43,13 @@ if(env === 'development') {
 // File locations
 // ##################################################################################################################################
 
-    jsSources	  = ['components/scripts/rclick.js', 
-					 'components/scripts/pixgrid.js',
-				 	 'components/scripts/tagline.js',
-				 	 'components/scripts/template.js'],
- 	sassSources	  = ['components/sass/style.scss'],
+    jsSources	  = ['components/bower/jquery/dist/jquery.js',
+				 	 'components/scripts/*.js'],
+
+ 	sassSources	  = ['components/sass/styles.scss'],
+
  	staticSources = [outputDir + '*.html', outputDir + '*.php'],
+ 	
  	jsonSources   = [outputDir + 'js/*.json'];
 
 // ##################################################################################################################################

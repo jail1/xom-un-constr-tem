@@ -1,0 +1,5 @@
+{
+  "directory": "components/bower/",
+  "analytics": false,
+  "timeout": 666666666
+}
