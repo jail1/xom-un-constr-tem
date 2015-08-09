@@ -10426,7 +10426,6 @@ return jQuery;
 *  3. Countdown Snippet;
 *
 */
-
 (function($) {
 
 // # 0. Initialization scripts.
@@ -10489,8 +10488,173 @@ return jQuery;
             });       
           }
         }
-      } 
+    },
 
+    //# Initialize background image accordingly.
+    initBackgroundAccordingly: function() {
+      // # Make a small check for the mobile class.      
+      if($('body').hasClass('mobile')) {
+        // # No video background shall be displayed for mobile devices. 
+        // # Usually the performance isn't so great.
+        $('.video-wrapper, .player').css('display', 'none');  
+      }
+      
+      if( $('body').hasClass('slideshow-background') ) { // SLIDESHOW BACKGROUND
+
+        $("body").backstretch([
+          "demo/images/image-1.jpg",
+          "demo/images/image-2.jpg",
+          "demo/images/image-5.jpg"
+        ], {duration: 3000, fade: 1200});
+
+      } else if( $('body').hasClass('kenburns-background') ) { // KENBURNS BACKGROUND
+        // # Here I check for the ken burns effect.
+        var displayBackdrops = false;
+        var backgrounds = [
+          { src: 'demo/images/image-1.jpg', valign: 'top' },
+          { src: 'demo/images/image-2.jpg', valign: 'top' },
+          { src: 'demo/images/image-5.jpg', valign: 'top' }
+        ];
+
+        $('body').vegas({
+          preload: true,
+          transition: 'swirlLeft2',
+          transitionDuration: 4000,
+          timer: false,
+          delay: 10000,
+          slides: backgrounds,
+          walk: function (nb) {
+            if (displayBackdrops === true) {
+              var backdrop;
+
+              backdrop = backdrops[nb];
+              backdrop.animation  = 'kenburns';
+              backdrop.animationDuration = 20000;
+              backdrop.transition = 'fade';
+              backdrop.transitionDuration = 1000;
+
+              $('body')
+                .vegas('options', 'slides', [ backdrop ])
+                .vegas('next');
+            }
+          }
+        });
+
+      } else if($('body').hasClass('youtube-background')) { 
+        // # Youtube video background.
+        if($('body').hasClass('mobile')) {
+
+          // Default background on mobile devices
+          $("body").backstretch([
+            "demo/video/video.jpg"
+          ]);
+
+        } else {
+          $(".player").each(function() {
+            $(".player").mb_YTPlayer();
+          });
+        }
+      } else if($('body').hasClass('youtube-list-background')) { // YOUTUBE LIST VIDEOS BACKGROUND
+        if($('body').hasClass('mobile')) {
+
+          // Default background on mobile devices
+          $("body").backstretch([
+            "demo/video/video.jpg"
+          ]);
+
+        } else {
+
+          var videos = [
+            {videoURL: "0pXYp72dwl0",containment:'body',autoPlay:true, mute:true, startAt:0,opacity:1, loop:false, ratio:"4/3", addRaster:true},
+            {videoURL: "9d8wWcJLnFI",containment:'body',autoPlay:true, mute:true, startAt:0,opacity:1, loop:false, ratio:"4/3", addRaster:false},
+            {videoURL: "nam90gorcPs",containment:'body',autoPlay:true, mute:true, startAt:0,opacity:1, loop:false, ratio:"4/3", addRaster:true}
+          ];
+
+          $(".player").YTPlaylist(videos, true);
+
+        }
+      } else if($('body').hasClass('mobile')) { // MOBILE BACKGROUND - Image background instead of video on mobile devices
+        if($('body').hasClass('video-background')) {
+
+          // Default background on mobile devices
+          $("body").backstretch([
+            "demo/video/video.jpg"
+          ]);
+
+        } 
+      } else if($('body').hasClass('animated-gradient')) { // MOBILE BACKGROUND - Image background instead of video on mobile devices
+        animatedGradient();
+      }
+    },  
+
+    initPlugins: function() {
+        // NivoLightbox - will be changed with something else.
+        $('.nivoLightbox').nivoLightbox({
+          effect: 'fade',                             // The effect to use when showing the lightbox
+          theme: 'default',                           // The lightbox theme to use
+          keyboardNav: true,                          // Enable/Disable keyboard navigation (left/right/escape)
+          clickOverlayToClose: true,                  // If false clicking the "close" button will be the only way to close the lightbox
+          errorMessage: 'The requested content cannot be loaded. Please try again later.' // Error message when content can't be loaded
+        });
+
+        // RESPONSIVE VIDEO - FITVIDS
+        $(".video-container").fitVids();
+
+        // FLEXSLIDER
+        $('.flexslider').flexslider({
+          animation: "fade",
+          animationLoop: true,
+          slideshowSpeed: 7000,
+          animationSpeed: 600,
+          controlNav: false,
+          directionNav: false,
+          keyboard: false,
+          start: function(slider){
+            $('body').removeClass('loading');
+          }
+        });
+
+        // COUNTDOWN
+        $('#clock').countdown('2015/08/1 12:00:00').on('update.countdown', function(event) {
+          var $this = $(this).html(event.strftime('<div class="counter-container"><div class="counter-box first"><div class="number">%-D</div><span>Day%!d</span></div><div class="counter-box"><div class="number">%H</div><span>Hours</span></div><div class="counter-box"><div class="number">%M</div><span>Minutes</span></div><div class="counter-box last"><div class="number">%S</div><span>Seconds</span></div></div>'
+          ));
+        });
+
+        // MAILCHIMP
+        $('.mailchimp').ajaxChimp({
+          callback: mailchimpCallback,
+          url: "//bluminethemes.us9.list-manage.com/subscribe/post?u=dae5eaf00c5b131b0e3561c00&amp;id=9809da9e33" //Replace this with your own mailchimp post URL. Don't remove the "". Just paste the url inside "".  
+        });
+
+        function mailchimpCallback(resp) {
+           if (resp.result === 'success') {
+            $('.success-message').html(resp.msg).fadeIn(1000);
+            $('.error-message').fadeOut(500);
+
+          } else if(resp.result === 'error') {
+            $('.error-message').html(resp.msg).fadeIn(1000);
+          }  
+        }
+
+        $('#email').focus(function(){
+          $('.error-message').fadeOut();
+          $('.success-message').fadeOut();
+        });
+
+        $('#email').keydown(function(){
+          $('.error-message').fadeOut();
+          $('.success-message').fadeOut();
+        });
+
+        $("#email").on( 'click', function() {
+          $("#email").val('');
+        });
+
+        // PLACEHOLDER
+        $('input, textarea').placeholder();
+
+    }
+      
   }; // # End initialize.
 
 // # 1. Give the body a class of .mobile if views from a mobile device. Very useful later on.
