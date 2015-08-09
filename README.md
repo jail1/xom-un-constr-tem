@@ -1,0 +1,2 @@
+# This project is for educational purpsoes only! Please do not try to use it for anything in particular; especially not for production.
+# This project will be deleted once I am satisfied with how much I've learned from it!
