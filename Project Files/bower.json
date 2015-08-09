@@ -22,7 +22,14 @@
     "test",
     "tests"
   ],
-  "devDependencies": {
-    "jquery": "~2.1.4"
+  "devDependencies": {},
+  "dependencies": {
+    "fontawesome": "~4.4.0",
+    "jquery": "~2.1.4",
+    "ionicons": "~2.0.1",
+    "bootstrap": "~3.3.5",
+    "vegas": "~2.1.3",
+    "jquery.mb.YTPlayer": "~2.9.4",
+    "jquery-backstretch": "~2.0.4"
   }
 }
