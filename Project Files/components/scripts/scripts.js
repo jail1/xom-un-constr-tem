@@ -90,21 +90,27 @@
         $('.video-wrapper, .player').css('display', 'none');  
       }
       
-      if( $('body').hasClass('slideshow-background') ) { // SLIDESHOW BACKGROUND
-
+      if( $('body').hasClass('slideshow-background') ) {
+        // # This uses backstretch to generate the changing background. 
+        // # This will only happen if the body has a class of slideshow-background.
         $("body").backstretch([
-          "demo/images/image-1.jpg",
-          "demo/images/image-2.jpg",
-          "demo/images/image-5.jpg"
+          "images/backgrounds/background1.jpg",
+          "images/backgrounds/background2.jpg",
+          "images/backgrounds/background3.jpg",
+          "images/backgrounds/background4.jpg",
+          "images/backgrounds/background5.jpg"
         ], {duration: 3000, fade: 1200});
 
-      } else if( $('body').hasClass('kenburns-background') ) { // KENBURNS BACKGROUND
-        // # Here I check for the ken burns effect.
+      } else if( $('body').hasClass('kenburns-background') ) { 
+        // # This uses vegas to generate the changing background while also adding the ken burns effect.
+        // # This will only happen if the body has a class of kenburns-background.
         var displayBackdrops = false;
         var backgrounds = [
-          { src: 'demo/images/image-1.jpg', valign: 'top' },
-          { src: 'demo/images/image-2.jpg', valign: 'top' },
-          { src: 'demo/images/image-5.jpg', valign: 'top' }
+          { src: 'images/backgrounds/background1.jpg', valign: 'top' },
+          { src: 'images/backgrounds/background2.jpg', valign: 'top' },
+          { src: 'images/backgrounds/background3.jpg', valign: 'top' },
+          { src: 'images/backgrounds/background4.jpg', valign: 'top' },
+          { src: 'images/backgrounds/background5.jpg', valign: 'top' }
         ];
 
         $('body').vegas({
@@ -134,8 +140,8 @@
       } else if($('body').hasClass('youtube-background')) { 
         // # Youtube video background.
         if($('body').hasClass('mobile')) {
-
-          // Default background on mobile devices
+          // # Default background on mobile devices
+          // # This will NOT be a video. The video will not even load for performance purposes.
           $("body").backstretch([
             "demo/video/video.jpg"
           ]);
@@ -178,7 +184,7 @@
       }
     },  
 
-  initPlugins: function() {
+    initPlugins: function() {
       // NivoLightbox - will be changed with something else.
       $('.nivoLightbox').nivoLightbox({
         effect: 'fade',                             // The effect to use when showing the lightbox
@@ -243,8 +249,29 @@
 
       // PLACEHOLDER
       $('input, textarea').placeholder();
-    }
+    },
 
+    // # 3. This is the clock plugin used for the sites counter widget. 
+    initTicker: function() {
+      function second_passed() {
+        $('.clock').removeClass('is-off');
+      }
+      setTimeout(second_passed, 2000)
+
+      var newDate = new Date();
+      newDate.setDate(newDate.getDate());
+
+      setInterval( function() {
+        var hours    = new Date().getHours();
+        var seconds  = new Date().getSeconds();
+        var minutes  = new Date().getMinutes();
+
+        var realTime = ( hours < 10 ? '0' : '' ) + hours + ' : ' + ( minutes < 10 ? '0' : '' ) + minutes + ' : ' + ( seconds < 10 ? '0' : '' ) + seconds
+
+        $('.time').html(realTime);
+        $('.time').attr('data-time', realTime);
+      }, 1000);
+    } 
   }; // # End initialize.
 
 // # 1. Give the body a class of .mobile if views from a mobile device. Very useful later on.
@@ -320,32 +347,10 @@ $(document).ready(function() {
     documentWidthOnResize  = utilities.getWindowWidth();
   });
 
-// # 3. This is the clock plugin used for the sites counter widget. 
-  function ticker() {
-    function second_passed() {
-        $('.clock').removeClass('is-off');
-      }
-      setTimeout(second_passed, 2000)
-
-      $('.sw').on('click', function(e) {
-        e.preventDefault();
-        $('.wrap').toggleClass('glitch');
-      });
-
-      var newDate = new Date();
-      newDate.setDate(newDate.getDate());
-
-      setInterval( function() {
-        var hours    = new Date().getHours();
-        var seconds  = new Date().getSeconds();
-        var minutes  = new Date().getMinutes();
-
-        var realTime = ( hours < 10 ? '0' : '' ) + hours + ' : ' + ( minutes < 10 ? '0' : '' ) + minutes + ' : ' + ( seconds < 10 ? '0' : '' ) + seconds
-
-        $('.time').html(realTime);
-        $('.time').attr('data-time', realTime);
-      }, 1000);
-  }
+  $('.sw').on('click', function(e) {
+    e.preventDefault();
+    $('.wrap').toggleClass('glitch');
+  });
 
   // # This triggers when the window has been loaded.
   // # Trigger the progress animation on window load.
@@ -357,7 +362,8 @@ $(document).ready(function() {
   // # Equivalent with the $(document).ready(function() {}); expression.
   $(function() {
       initialize.initAnimations();
-      ticker();
+      initialize.initBackgroundAccordingly();
+      initialize.initTicker();
   });
 
   // # Make the elements full screen again.

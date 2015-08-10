@@ -26,7 +26,7 @@ var gulp 			= require('gulp'),                  //*
 	jsonminify  	= require('gulp-jsonminify'),       //*    
 	guglify			= require('gulp-uglify');           //*
 	
-var env, jsSources, sassSources, staticSources, fontsSources, jsonSources, sassStyle, outputDir, bootsrapPath, fontAwesomePath, ioniconsPath;
+var env, jsSources, sassSources, staticSources, fontsSources, jsonSources, sassStyle, outputDir, bootsrapPath, fontAwesomePath, ioniconsPath, bowerPath, jqmbytp;
 var env = process.env.NODE_ENV || 'development';
 var prod = env === 'development' ? false : true;
 
@@ -44,12 +44,16 @@ console.warn('Current node env is ', outputDir);
 // File locations
 // ##################################################################################################################################
 
+	bowerPath 		= 'components/bower/';
 	bootsrapPath    = 'components/bower/bootstrap-sass/assets/'; 
 	fontAwesomePath = 'components/bower/fontawesome/';
 	ioniconsPath    = 'components/bower/ionicons/';
+	jqmbytp  		= 'jquery.mb.YTPlayer/dist/css/';
 
     jsSources	  = ['components/bower/jquery/dist/jquery.js',
     				 'components/bower/animateCSS/dist/jquery.animatecss.js',
+    				 'components/bower/jquery-backstretch/jquery.backstretch.js',
+    				 'components/bower/vegas/dist/vegas.js',
     				 bootsrapPath + 'javascripts/bootstrap/transition.js',
     				 bootsrapPath + 'javascripts/bootstrap/tooltip.js',
     				 bootsrapPath + 'javascripts/bootstrap/popover.js',
@@ -59,7 +63,11 @@ console.warn('Current node env is ', outputDir);
 
  	fontsSources  = [bootsrapPath    + 'fonts/bootstrap/*.{ttf,woff,woff2,eot,svg}',
 				     fontAwesomePath + 'fonts/*.{ttf,woff,woff2,eot,svg,otf}',
-				     ioniconsPath    + 'fonts/*.{ttf,woff,eot,svg}'];
+				     ioniconsPath    + 'fonts/*.{ttf,woff,eot,svg}',
+				     jqmbytp         + 'font/*.{ttf,woff,eot}'];
+
+ 	cssSources 	  = [bowerPath + 'vegas/dist/vegas.css',
+					 bowerPath + jqmbytp + 'jquery.mb.YTPlayer.min.css']
 
  	sassSources	  = [bootsrapPath + 'stylesheets/_bootstrap.scss',  
 					'components/sass/styles.scss'];
@@ -144,6 +152,16 @@ gulp.task('fonts', function() {
 });
 
 // ##################################################################################################################################
+// Move plain CSS Task
+// ##################################################################################################################################
+
+gulp.task('css', function() {
+	gulp.src(cssSources)
+		.pipe(gulp.dest('builds/development/css/vendor/'))
+		.pipe(gulp.dest('builds/production/css/vendor/'));
+});
+
+// ##################################################################################################################################
 // Json Task
 // ##################################################################################################################################
 
@@ -216,7 +234,7 @@ gulp.task('browser-sync', function() {
 // ##################################################################################################################################
 
 gulp.task('default2', ['static', 'js-lint', 'json', 'js', 'compass', 'images', 'connect', 'watch']); 
-gulp.task('default', ['static', 'json', 'js', 'compass', 'fonts', 'images', 'browser-sync']); 
+gulp.task('default', ['static', 'json', 'js', 'compass', 'fonts', 'css', 'images', 'browser-sync']); 
 // Process all of this. Yell 'gulp' in console.
 
 // ##################################################################################################################################

@@ -9290,6 +9290,1064 @@ return jQuery;
 
 }).call(this);
 
+/*! Backstretch - v2.0.4 - 2013-06-19
+* http://srobbin.com/jquery-plugins/backstretch/
+* Copyright (c) 2013 Scott Robbin; Licensed MIT */
+
+;(function ($, window, undefined) {
+  'use strict';
+
+  /* PLUGIN DEFINITION
+   * ========================= */
+
+  $.fn.backstretch = function (images, options) {
+    // We need at least one image or method name
+    if (images === undefined || images.length === 0) {
+      $.error("No images were supplied for Backstretch");
+    }
+
+    /*
+     * Scroll the page one pixel to get the right window height on iOS
+     * Pretty harmless for everyone else
+    */
+    if ($(window).scrollTop() === 0 ) {
+      window.scrollTo(0, 0);
+    }
+
+    return this.each(function () {
+      var $this = $(this)
+        , obj = $this.data('backstretch');
+
+      // Do we already have an instance attached to this element?
+      if (obj) {
+
+        // Is this a method they're trying to execute?
+        if (typeof images == 'string' && typeof obj[images] == 'function') {
+          // Call the method
+          obj[images](options);
+
+          // No need to do anything further
+          return;
+        }
+
+        // Merge the old options with the new
+        options = $.extend(obj.options, options);
+
+        // Remove the old instance
+        obj.destroy(true);
+      }
+
+      obj = new Backstretch(this, images, options);
+      $this.data('backstretch', obj);
+    });
+  };
+
+  // If no element is supplied, we'll attach to body
+  $.backstretch = function (images, options) {
+    // Return the instance
+    return $('body')
+            .backstretch(images, options)
+            .data('backstretch');
+  };
+
+  // Custom selector
+  $.expr[':'].backstretch = function(elem) {
+    return $(elem).data('backstretch') !== undefined;
+  };
+
+  /* DEFAULTS
+   * ========================= */
+
+  $.fn.backstretch.defaults = {
+      centeredX: true   // Should we center the image on the X axis?
+    , centeredY: true   // Should we center the image on the Y axis?
+    , duration: 5000    // Amount of time in between slides (if slideshow)
+    , fade: 0           // Speed of fade transition between slides
+  };
+
+  /* STYLES
+   * 
+   * Baked-in styles that we'll apply to our elements.
+   * In an effort to keep the plugin simple, these are not exposed as options.
+   * That said, anyone can override these in their own stylesheet.
+   * ========================= */
+  var styles = {
+      wrap: {
+          left: 0
+        , top: 0
+        , overflow: 'hidden'
+        , margin: 0
+        , padding: 0
+        , height: '100%'
+        , width: '100%'
+        , zIndex: -999999
+      }
+    , img: {
+          position: 'absolute'
+        , display: 'none'
+        , margin: 0
+        , padding: 0
+        , border: 'none'
+        , width: 'auto'
+        , height: 'auto'
+        , maxHeight: 'none'
+        , maxWidth: 'none'
+        , zIndex: -999999
+      }
+  };
+
+  /* CLASS DEFINITION
+   * ========================= */
+  var Backstretch = function (container, images, options) {
+    this.options = $.extend({}, $.fn.backstretch.defaults, options || {});
+
+    /* In its simplest form, we allow Backstretch to be called on an image path.
+     * e.g. $.backstretch('/path/to/image.jpg')
+     * So, we need to turn this back into an array.
+     */
+    this.images = $.isArray(images) ? images : [images];
+
+    // Preload images
+    $.each(this.images, function () {
+      $('<img />')[0].src = this;
+    });    
+
+    // Convenience reference to know if the container is body.
+    this.isBody = container === document.body;
+
+    /* We're keeping track of a few different elements
+     *
+     * Container: the element that Backstretch was called on.
+     * Wrap: a DIV that we place the image into, so we can hide the overflow.
+     * Root: Convenience reference to help calculate the correct height.
+     */
+    this.$container = $(container);
+    this.$root = this.isBody ? supportsFixedPosition ? $(window) : $(document) : this.$container;
+
+    // Don't create a new wrap if one already exists (from a previous instance of Backstretch)
+    var $existing = this.$container.children(".backstretch").first();
+    this.$wrap = $existing.length ? $existing : $('<div class="backstretch"></div>').css(styles.wrap).appendTo(this.$container);
+
+    // Non-body elements need some style adjustments
+    if (!this.isBody) {
+      // If the container is statically positioned, we need to make it relative,
+      // and if no zIndex is defined, we should set it to zero.
+      var position = this.$container.css('position')
+        , zIndex = this.$container.css('zIndex');
+
+      this.$container.css({
+          position: position === 'static' ? 'relative' : position
+        , zIndex: zIndex === 'auto' ? 0 : zIndex
+        , background: 'none'
+      });
+      
+      // Needs a higher z-index
+      this.$wrap.css({zIndex: -999998});
+    }
+
+    // Fixed or absolute positioning?
+    this.$wrap.css({
+      position: this.isBody && supportsFixedPosition ? 'fixed' : 'absolute'
+    });
+
+    // Set the first image
+    this.index = 0;
+    this.show(this.index);
+
+    // Listen for resize
+    $(window).on('resize.backstretch', $.proxy(this.resize, this))
+             .on('orientationchange.backstretch', $.proxy(function () {
+                // Need to do this in order to get the right window height
+                if (this.isBody && window.pageYOffset === 0) {
+                  window.scrollTo(0, 1);
+                  this.resize();
+                }
+             }, this));
+  };
+
+  /* PUBLIC METHODS
+   * ========================= */
+  Backstretch.prototype = {
+      resize: function () {
+        try {
+          var bgCSS = {left: 0, top: 0}
+            , rootWidth = this.isBody ? this.$root.width() : this.$root.innerWidth()
+            , bgWidth = rootWidth
+            , rootHeight = this.isBody ? ( window.innerHeight ? window.innerHeight : this.$root.height() ) : this.$root.innerHeight()
+            , bgHeight = bgWidth / this.$img.data('ratio')
+            , bgOffset;
+
+            // Make adjustments based on image ratio
+            if (bgHeight >= rootHeight) {
+                bgOffset = (bgHeight - rootHeight) / 2;
+                if(this.options.centeredY) {
+                  bgCSS.top = '-' + bgOffset + 'px';
+                }
+            } else {
+                bgHeight = rootHeight;
+                bgWidth = bgHeight * this.$img.data('ratio');
+                bgOffset = (bgWidth - rootWidth) / 2;
+                if(this.options.centeredX) {
+                  bgCSS.left = '-' + bgOffset + 'px';
+                }
+            }
+
+            this.$wrap.css({width: rootWidth, height: rootHeight})
+                      .find('img:not(.deleteable)').css({width: bgWidth, height: bgHeight}).css(bgCSS);
+        } catch(err) {
+            // IE7 seems to trigger resize before the image is loaded.
+            // This try/catch block is a hack to let it fail gracefully.
+        }
+
+        return this;
+      }
+
+      // Show the slide at a certain position
+    , show: function (newIndex) {
+
+        // Validate index
+        if (Math.abs(newIndex) > this.images.length - 1) {
+          return;
+        }
+
+        // Vars
+        var self = this
+          , oldImage = self.$wrap.find('img').addClass('deleteable')
+          , evtOptions = { relatedTarget: self.$container[0] };
+
+        // Trigger the "before" event
+        self.$container.trigger($.Event('backstretch.before', evtOptions), [self, newIndex]); 
+
+        // Set the new index
+        this.index = newIndex;
+
+        // Pause the slideshow
+        clearInterval(self.interval);
+
+        // New image
+        self.$img = $('<img />')
+                      .css(styles.img)
+                      .bind('load', function (e) {
+                        var imgWidth = this.width || $(e.target).width()
+                          , imgHeight = this.height || $(e.target).height();
+                        
+                        // Save the ratio
+                        $(this).data('ratio', imgWidth / imgHeight);
+
+                        // Show the image, then delete the old one
+                        // "speed" option has been deprecated, but we want backwards compatibilty
+                        $(this).fadeIn(self.options.speed || self.options.fade, function () {
+                          oldImage.remove();
+
+                          // Resume the slideshow
+                          if (!self.paused) {
+                            self.cycle();
+                          }
+
+                          // Trigger the "after" and "show" events
+                          // "show" is being deprecated
+                          $(['after', 'show']).each(function () {
+                            self.$container.trigger($.Event('backstretch.' + this, evtOptions), [self, newIndex]);
+                          });
+                        });
+
+                        // Resize
+                        self.resize();
+                      })
+                      .appendTo(self.$wrap);
+
+        // Hack for IE img onload event
+        self.$img.attr('src', self.images[newIndex]);
+        return self;
+      }
+
+    , next: function () {
+        // Next slide
+        return this.show(this.index < this.images.length - 1 ? this.index + 1 : 0);
+      }
+
+    , prev: function () {
+        // Previous slide
+        return this.show(this.index === 0 ? this.images.length - 1 : this.index - 1);
+      }
+
+    , pause: function () {
+        // Pause the slideshow
+        this.paused = true;
+        return this;
+      }
+
+    , resume: function () {
+        // Resume the slideshow
+        this.paused = false;
+        this.next();
+        return this;
+      }
+
+    , cycle: function () {
+        // Start/resume the slideshow
+        if(this.images.length > 1) {
+          // Clear the interval, just in case
+          clearInterval(this.interval);
+
+          this.interval = setInterval($.proxy(function () {
+            // Check for paused slideshow
+            if (!this.paused) {
+              this.next();
+            }
+          }, this), this.options.duration);
+        }
+        return this;
+      }
+
+    , destroy: function (preserveBackground) {
+        // Stop the resize events
+        $(window).off('resize.backstretch orientationchange.backstretch');
+
+        // Clear the interval
+        clearInterval(this.interval);
+
+        // Remove Backstretch
+        if(!preserveBackground) {
+          this.$wrap.remove();          
+        }
+        this.$container.removeData('backstretch');
+      }
+  };
+
+  /* SUPPORTS FIXED POSITION?
+   *
+   * Based on code from jQuery Mobile 1.1.0
+   * http://jquerymobile.com/
+   *
+   * In a nutshell, we need to figure out if fixed positioning is supported.
+   * Unfortunately, this is very difficult to do on iOS, and usually involves
+   * injecting content, scrolling the page, etc.. It's ugly.
+   * jQuery Mobile uses this workaround. It's not ideal, but works.
+   *
+   * Modified to detect IE6
+   * ========================= */
+
+  var supportsFixedPosition = (function () {
+    var ua = navigator.userAgent
+      , platform = navigator.platform
+        // Rendering engine is Webkit, and capture major version
+      , wkmatch = ua.match( /AppleWebKit\/([0-9]+)/ )
+      , wkversion = !!wkmatch && wkmatch[ 1 ]
+      , ffmatch = ua.match( /Fennec\/([0-9]+)/ )
+      , ffversion = !!ffmatch && ffmatch[ 1 ]
+      , operammobilematch = ua.match( /Opera Mobi\/([0-9]+)/ )
+      , omversion = !!operammobilematch && operammobilematch[ 1 ]
+      , iematch = ua.match( /MSIE ([0-9]+)/ )
+      , ieversion = !!iematch && iematch[ 1 ];
+
+    return !(
+      // iOS 4.3 and older : Platform is iPhone/Pad/Touch and Webkit version is less than 534 (ios5)
+      ((platform.indexOf( "iPhone" ) > -1 || platform.indexOf( "iPad" ) > -1  || platform.indexOf( "iPod" ) > -1 ) && wkversion && wkversion < 534) ||
+      
+      // Opera Mini
+      (window.operamini && ({}).toString.call( window.operamini ) === "[object OperaMini]") ||
+      (operammobilematch && omversion < 7458) ||
+      
+      //Android lte 2.1: Platform is Android and Webkit version is less than 533 (Android 2.2)
+      (ua.indexOf( "Android" ) > -1 && wkversion && wkversion < 533) ||
+      
+      // Firefox Mobile before 6.0 -
+      (ffversion && ffversion < 6) ||
+      
+      // WebOS less than 3
+      ("palmGetResource" in window && wkversion && wkversion < 534) ||
+      
+      // MeeGo
+      (ua.indexOf( "MeeGo" ) > -1 && ua.indexOf( "NokiaBrowser/8.5.0" ) > -1) ||
+      
+      // IE6
+      (ieversion && ieversion <= 6)
+    );
+  }());
+
+}(jQuery, window));
+/*!-----------------------------------------------------------------------------
+ * Vegas - Fullscreen Backgrounds and Slideshows.
+ * v2.1.3 - built 2015-04-28
+ * Licensed under the MIT License.
+ * http://vegas.jaysalvat.com/
+ * ----------------------------------------------------------------------------
+ * Copyright (C) 2010-2015 Jay Salvat
+ * http://jaysalvat.com/
+ * --------------------------------------------------------------------------*/
+
+(function ($) {
+    'use strict';
+
+    var defaults = {
+        slide:              0,
+        delay:              5000,
+        preload:            false,
+        preloadImage:       false,
+        preloadVideo:       false,
+        timer:              true,
+        overlay:            false,
+        autoplay:           true,
+        shuffle:            false,
+        cover:              true,
+        color:              null,
+        align:              'center',
+        valign:             'center',
+        transition:         'fade',
+        transitionDuration: 1000,
+        transitionRegister: [],
+        animation:          null,
+        animationDuration:  'auto',
+        animationRegister:  [],
+        init:  function () {},
+        play:  function () {},
+        pause: function () {},
+        walk:  function () {},
+        slides: [
+            // {   
+            //  src:                null,
+            //  color:              null,
+            //  delay:              null,
+            //  align:              null,
+            //  valign:             null,
+            //  transition:         null,
+            //  transitionDuration: null,
+            //  animation:          null,
+            //  animationDuration:  null,
+            //  cover:              true,
+            //  video: {
+            //      src: [],
+            //      mute: true,
+            //      loop: true
+            // }
+            // ...
+        ]
+    };
+
+    var videoCache = {};
+
+    var Vegas = function (elmt, options) {
+        this.elmt         = elmt;
+        this.settings     = $.extend({}, defaults, $.vegas.defaults, options);
+        this.slide        = this.settings.slide;
+        this.total        = this.settings.slides.length;
+        this.noshow       = this.total < 2;
+        this.paused       = !this.settings.autoplay || this.noshow;
+        this.$elmt        = $(elmt);
+        this.$timer       = null;
+        this.$overlay     = null;
+        this.$slide       = null;
+        this.timeout      = null;
+
+        this.transitions = [
+            'fade', 'fade2',
+            'blur', 'blur2',
+            'flash', 'flash2',
+            'negative', 'negative2',
+            'burn', 'burn2',
+            'slideLeft', 'slideLeft2',
+            'slideRight', 'slideRight2',
+            'slideUp', 'slideUp2',
+            'slideDown', 'slideDown2',
+            'zoomIn', 'zoomIn2',
+            'zoomOut', 'zoomOut2',
+            'swirlLeft', 'swirlLeft2',
+            'swirlRight', 'swirlRight2'
+        ];
+
+        this.animations = [
+            'kenburns',
+            'kenburnsLeft', 'kenburnsRight',
+            'kenburnsUp', 'kenburnsUpLeft', 'kenburnsUpRight',
+            'kenburnsDown', 'kenburnsDownLeft', 'kenburnsDownRight'
+        ];
+
+        if (this.settings.transitionRegister instanceof Array === false) {
+            this.settings.transitionRegister = [ this.settings.transitionRegister ];
+        }
+
+        if (this.settings.animationRegister instanceof Array === false) {
+            this.settings.animationRegister = [ this.settings.animationRegister ];
+        }
+        
+        this.transitions = this.transitions.concat(this.settings.transitionRegister);
+        this.animations  = this.animations.concat(this.settings.animationRegister);
+
+        this.support = {
+            objectFit:  'objectFit'  in document.body.style,
+            transition: 'transition' in document.body.style || 'WebkitTransition' in document.body.style,
+            video:      $.vegas.isVideoCompatible()
+        };
+
+        if (this.settings.shuffle === true) {
+            this.shuffle();
+        }
+
+        this._init();
+    };
+
+    Vegas.prototype = {
+        _init: function () {
+            var $wrapper,
+                $overlay,
+                $timer,
+                isBody  = this.elmt.tagName === 'BODY',
+                timer   = this.settings.timer,
+                overlay = this.settings.overlay,
+                self    = this;
+
+            // Preloading
+            this._preload();
+
+            // Wrapper with content
+            if (!isBody) {
+                this.$elmt.css('height', this.$elmt.css('height'));
+                
+                $wrapper = $('<div class="vegas-wrapper">')
+                    .css('overflow', this.$elmt.css('overflow'))
+                    .css('padding',  this.$elmt.css('padding'));
+
+                // Some browsers don't compute padding shorthand
+                if (!this.$elmt.css('padding')) {
+                    $wrapper
+                        .css('padding-top',    this.$elmt.css('padding-top'))
+                        .css('padding-bottom', this.$elmt.css('padding-bottom'))
+                        .css('padding-left',   this.$elmt.css('padding-left'))
+                        .css('padding-right',  this.$elmt.css('padding-right'));
+                }
+
+                this.$elmt.clone(true).children().appendTo($wrapper);
+                this.elmt.innerHTML = '';
+            }
+
+            // Timer
+            if (timer && this.support.transition) {
+                $timer = $('<div class="vegas-timer"><div class="vegas-timer-progress">');
+                this.$timer = $timer;
+                this.$elmt.prepend($timer);
+            }
+
+            // Overlay
+            if (overlay) {
+                $overlay = $('<div class="vegas-overlay">');
+
+                if (typeof overlay === 'string') {
+                    $overlay.css('background-image', 'url(' + overlay + ')');
+                }
+
+                this.$overlay = $overlay;
+                this.$elmt.prepend($overlay);
+            }
+
+            // Container
+            this.$elmt.addClass('vegas-container');
+
+            if (!isBody) {
+                this.$elmt.append($wrapper);
+            }
+
+            setTimeout(function () {
+                self.trigger('init');
+                self._goto(self.slide);
+
+                if (self.settings.autoplay) {
+                    self.trigger('play');
+                }
+            }, 1);
+        },
+
+        _preload: function () {
+            var video, img, i;
+
+            for (i = 0; i < this.settings.slides.length; i++) {
+                if (this.settings.preload || this.settings.preloadImages) {
+                    if (this.settings.slides[i].src) {
+                        img = new Image();
+                        img.src = this.settings.slides[i].src;
+                    }
+                }
+
+                if (this.settings.preload || this.settings.preloadVideos) {
+                    if (this.support.video && this.settings.slides[i].video) {
+                        if (this.settings.slides[i].video instanceof Array) {
+                            video = this._video(this.settings.slides[i].video);
+                        } else {
+                            video = this._video(this.settings.slides[i].video.src);
+                        }
+                    }
+                }
+            }
+        },
+
+        _random: function (array) {
+            return array[Math.floor(Math.random() * (array.length - 1))];
+        },
+
+        _slideShow: function () {
+            var self = this;
+
+            if (this.total > 1 && !this.paused && !this.noshow) {
+                this.timeout = setTimeout(function () {
+                    self.next();
+                }, this._options('delay')); 
+            }
+        },
+
+        _timer: function (state) {
+            var self = this;
+
+            clearTimeout(this.timeout);
+
+            if (!this.$timer) {
+                return;
+            }
+
+            this.$timer
+                .removeClass('vegas-timer-running')
+                    .find('div')
+                        .css('transition-duration', '0ms');
+
+            if (this.paused || this.noshow) {
+                return;
+            }
+
+            if (state) {
+                setTimeout(function () {
+                   self.$timer
+                    .addClass('vegas-timer-running')
+                        .find('div')
+                            .css('transition-duration', self._options('delay') - 100 + 'ms');
+                }, 100);
+            }
+        },
+
+        _video: function (srcs) {
+            var video, 
+                source,
+                cacheKey = srcs.toString();
+
+            if (videoCache[cacheKey]) {
+                return videoCache[cacheKey];
+            }
+
+            if (srcs instanceof Array === false) {
+                srcs = [ srcs ];
+            }
+
+            video = document.createElement('video');
+            video.preload = true;
+
+            srcs.forEach(function (src) {
+                source = document.createElement('source');
+                source.src = src;
+                video.appendChild(source);
+            });
+
+            videoCache[cacheKey] = video;
+
+            return video;
+        },
+
+        _fadeOutSound: function (video, duration) {
+            var self   = this,
+                delay  = duration / 10,
+                volume = video.volume - 0.09;
+
+            if (volume > 0) {
+                video.volume = volume;
+
+                setTimeout(function () {
+                    self._fadeOutSound(video, duration);
+                }, delay);
+            } else {
+                video.pause();
+            }
+        },
+
+        _fadeInSound: function (video, duration) {
+            var self   = this,
+                delay  = duration / 10,
+                volume = video.volume + 0.09;
+            
+            if (volume < 1) {
+                video.volume = volume;
+
+                setTimeout(function () {
+                    self._fadeInSound(video, duration);
+                }, delay);
+            }
+        },
+
+        _options: function (key, i) {
+            if (i === undefined) {
+                i = this.slide;
+            }
+
+            if (this.settings.slides[i][key] !== undefined) {
+                return this.settings.slides[i][key];
+            }
+
+            return this.settings[key];
+        },
+
+        _goto: function (nb) {
+            if (typeof this.settings.slides[nb] === 'undefined') {
+                nb = 0;
+            }
+
+            this.slide = nb;
+
+            var $slide,
+                $inner,
+                $video,
+                $slides       = this.$elmt.children('.vegas-slide'),
+                src           = this.settings.slides[nb].src,
+                videoSettings = this.settings.slides[nb].video,
+                delay         = this._options('delay'),
+                align         = this._options('align'),
+                valign        = this._options('valign'),
+                color         = this._options('color') || this.$elmt.css('background-color'),
+                cover         = this._options('cover') ? 'cover' : 'contain',
+                self          = this,
+                total         = $slides.length,
+                video,
+                img;
+
+            var transition         = this._options('transition'),
+                transitionDuration = this._options('transitionDuration'),
+                animation          = this._options('animation' ),
+                animationDuration  = this._options('animationDuration');
+
+            if (transition === 'random' || transition instanceof Array) {
+                if (transition instanceof Array) {
+                    transition = this._random(transition);
+                } else {
+                    transition = this._random(this.transitions);
+                }
+            }
+
+            if (animation === 'random' || animation instanceof Array) {
+                if (animation instanceof Array) {
+                    animation = this._random(animation);
+                } else {
+                    animation = this._random(this.animations);
+                }
+            }
+
+            if (transitionDuration === 'auto' || transitionDuration > delay) {
+                transitionDuration = delay;
+            }
+
+            if (animationDuration === 'auto') {
+                animationDuration = delay;
+            }
+
+            $slide = $('<div class="vegas-slide"></div>');
+            
+            if (this.support.transition && transition) {
+                $slide.addClass('vegas-transition-' + transition);
+            }
+
+            // Video
+
+            if (this.support.video && videoSettings) {
+                if (videoSettings instanceof Array) {
+                    video = this._video(videoSettings);
+                } else {
+                    video = this._video(videoSettings.src);
+                }
+
+                video.loop  = videoSettings.loop !== undefined ? videoSettings.loop : true;
+                video.muted = videoSettings.mute !== undefined ? videoSettings.mute : true;
+
+                if (video.muted === false) {
+                    video.volume = 0;
+                    this._fadeInSound(video, transitionDuration);
+                } else {
+                    video.pause();
+                }
+
+                $video = $(video)
+                    .addClass('vegas-video')
+                    .css('background-color', color);
+
+                if (this.support.objectFit) {
+                    $video
+                        .css('object-position', align + ' ' + valign)
+                        .css('object-fit', cover)
+                        .css('width',  '100%')
+                        .css('height', '100%');
+                } else if (cover === 'contain') {
+                    $video
+                        .css('width',  '100%')
+                        .css('height', '100%');
+                }
+
+                $slide.append($video);
+
+            // Image
+
+            } else {
+                img = new Image();
+
+                $inner = $('<div class="vegas-slide-inner"></div>')
+                    .css('background-image',    'url(' + src + ')')
+                    .css('background-color',    color)
+                    .css('background-position', align + ' ' + valign)
+                    .css('background-size',     cover);
+
+                if (this.support.transition && animation) {
+                    $inner
+                        .addClass('vegas-animation-' + animation)
+                        .css('animation-duration',  animationDuration + 'ms');
+                }
+
+                $slide.append($inner);
+            }
+
+            if (!this.support.transition) {
+                $slide.css('display', 'none');
+            }
+
+            if (total) {
+                $slides.eq(total - 1).after($slide);
+            } else {
+                this.$elmt.prepend($slide);
+            }
+
+            self._timer(false);
+
+            function go () {
+                self._timer(true);
+
+                setTimeout(function () {
+                    if (transition) {
+                        if (self.support.transition) {
+                            $slides
+                                .css('transition', 'all ' + transitionDuration + 'ms')
+                                .addClass('vegas-transition-' + transition + '-out');
+
+                            $slides.each(function () {
+                                var video = $slides.find('video').get(0);
+
+                                if (video) {
+                                    video.volume = 1;
+                                    self._fadeOutSound(video, transitionDuration);
+                                }
+                            });
+
+                            $slide
+                                .css('transition', 'all ' + transitionDuration + 'ms')
+                                .addClass('vegas-transition-' + transition + '-in');
+                        } else {
+                            $slide.fadeIn(transitionDuration);
+                        }
+                    }
+
+                    for (var i = 0; i < $slides.length - 4; i++) {
+                         $slides.eq(i).remove();
+                    }
+
+                    self.trigger('walk');
+                    self._slideShow();
+                }, 100);
+            }
+            if (video) {
+                if (video.readyState === 4) {
+                    video.currentTime = 0;
+                }
+                
+                video.play();
+                go();
+            } else {
+                img.src = src;
+                img.onload = go;
+            }
+        },
+
+        shuffle: function () {
+            var temp,
+                rand;
+
+            for (var i = this.total - 1; i > 0; i--) {
+                rand = Math.floor(Math.random() * (i + 1));
+                temp = this.settings.slides[i];
+
+                this.settings.slides[i] = this.settings.slides[rand];
+                this.settings.slides[rand] = temp;
+            }
+        },
+
+        play: function () {
+            if (this.paused) {
+                this.paused = false;
+                this.next();
+                this.trigger('play');
+            }
+        },
+
+        pause: function () {
+            this._timer(false);
+            this.paused = true;
+            this.trigger('pause');
+        },
+
+        toggle: function () {
+            if (this.paused) {
+                this.play();
+            } else {
+                this.pause();
+            }
+        },
+
+        playing: function () {
+            return !this.paused && !this.noshow;
+        },
+
+        current: function (advanced) {
+            if (advanced) {
+                return {
+                    slide: this.slide,
+                    data:  this.settings.slides[this.slide]
+                };
+            }
+            return this.slide;
+        },
+
+        jump: function (nb) {
+            if (nb < 0 || nb > this.total - 1 || nb === this.slide) {
+                return;
+            }
+
+            this.slide = nb;
+            this._goto(this.slide);
+        },
+
+        next: function () {
+            this.slide++;
+
+            if (this.slide >= this.total) {
+                this.slide = 0;
+            }
+
+            this._goto(this.slide);
+        },
+
+        previous: function () {
+            this.slide--;
+
+            if (this.slide < 0) {
+                this.slide = this.total - 1;
+            }
+
+            this._goto(this.slide);
+        },
+
+        trigger: function (fn) {
+            var params = [];
+
+            if (fn === 'init') {
+                params = [ this.settings ];
+            } else {
+                params = [ 
+                    this.slide, 
+                    this.settings.slides[this.slide]
+                ];
+            }
+
+            this.$elmt.trigger('vegas' + fn, params);
+
+            if (typeof this.settings[fn] === 'function') {
+                this.settings[fn].apply(this.$elmt, params);
+            }
+        },
+
+        options: function (key, value) {
+            var oldSlides = this.settings.slides.slice();
+
+            if (typeof key === 'object') {
+                this.settings = $.extend({}, defaults, $.vegas.defaults, key);
+            } else if (typeof key === 'string') {
+                if (value === undefined) {
+                    return this.settings[key];
+                }
+                this.settings[key] = value; 
+            } else {
+                return this.settings;
+            }
+
+            // In case slides have changed
+            if (this.settings.slides !== oldSlides) {
+                this.total  = this.settings.slides.length;
+                this.noshow = this.total < 2;
+                this._preload();   
+            }
+        },
+
+        destroy: function () {
+            clearTimeout(this.timeout); 
+
+            this.$elmt.removeClass('vegas-container');
+            this.$elmt.find('> .vegas-slide').remove();
+            this.$elmt.find('> .vegas-wrapper').clone(true).children().appendTo(this.$elmt);
+            this.$elmt.find('> .vegas-wrapper').remove();
+
+            if (this.settings.timer) {
+                this.$timer.remove();
+            }
+
+            if (this.settings.overlay) {
+                this.$overlay.remove();
+            }
+            
+            this.elmt._vegas = null;
+        }
+    };
+
+    $.fn.vegas = function(options) {
+        var args = arguments,
+            error = false,
+            returns;
+
+        if (options === undefined || typeof options === 'object') {
+            return this.each(function () {
+                if (!this._vegas) {
+                    this._vegas = new Vegas(this, options);
+                }
+            });
+        } else if (typeof options === 'string') {
+            this.each(function () {
+                var instance = this._vegas;
+
+                if (!instance) {
+                    throw new Error('No Vegas applied to this element.');
+                }
+
+                if (typeof instance[options] === 'function' && options[0] !== '_') {
+                    returns = instance[options].apply(instance, [].slice.call(args, 1));
+                } else {
+                    error = true;
+                }
+            });
+
+            if (error) {
+                throw new Error('No method "' + options + '" in Vegas.');
+            }
+
+            return returns !== undefined ? returns : this;
+        }
+    };
+
+    $.vegas = {};
+    $.vegas.defaults = defaults;
+
+    $.vegas.isVideoCompatible = function () {
+        return !/(Android|webOS|Phone|iPad|iPod|BlackBerry|Windows Phone)/i.test(navigator.userAgent);
+    };
+
+})(window.jQuery || window.Zepto);
+
 /* ========================================================================
  * Bootstrap: transition.js v3.3.5
  * http://getbootstrap.com/javascript/#transitions
@@ -10499,21 +11557,27 @@ return jQuery;
         $('.video-wrapper, .player').css('display', 'none');  
       }
       
-      if( $('body').hasClass('slideshow-background') ) { // SLIDESHOW BACKGROUND
-
+      if( $('body').hasClass('slideshow-background') ) {
+        // # This uses backstretch to generate the changing background. 
+        // # This will only happen if the body has a class of slideshow-background.
         $("body").backstretch([
-          "demo/images/image-1.jpg",
-          "demo/images/image-2.jpg",
-          "demo/images/image-5.jpg"
+          "images/backgrounds/background1.jpg",
+          "images/backgrounds/background2.jpg",
+          "images/backgrounds/background3.jpg",
+          "images/backgrounds/background4.jpg",
+          "images/backgrounds/background5.jpg"
         ], {duration: 3000, fade: 1200});
 
-      } else if( $('body').hasClass('kenburns-background') ) { // KENBURNS BACKGROUND
-        // # Here I check for the ken burns effect.
+      } else if( $('body').hasClass('kenburns-background') ) { 
+        // # This uses vegas to generate the changing background while also adding the ken burns effect.
+        // # This will only happen if the body has a class of kenburns-background.
         var displayBackdrops = false;
         var backgrounds = [
-          { src: 'demo/images/image-1.jpg', valign: 'top' },
-          { src: 'demo/images/image-2.jpg', valign: 'top' },
-          { src: 'demo/images/image-5.jpg', valign: 'top' }
+          { src: 'images/backgrounds/background1.jpg', valign: 'top' },
+          { src: 'images/backgrounds/background2.jpg', valign: 'top' },
+          { src: 'images/backgrounds/background3.jpg', valign: 'top' },
+          { src: 'images/backgrounds/background4.jpg', valign: 'top' },
+          { src: 'images/backgrounds/background5.jpg', valign: 'top' }
         ];
 
         $('body').vegas({
@@ -10543,8 +11607,8 @@ return jQuery;
       } else if($('body').hasClass('youtube-background')) { 
         // # Youtube video background.
         if($('body').hasClass('mobile')) {
-
-          // Default background on mobile devices
+          // # Default background on mobile devices
+          // # This will NOT be a video. The video will not even load for performance purposes.
           $("body").backstretch([
             "demo/video/video.jpg"
           ]);
@@ -10587,7 +11651,7 @@ return jQuery;
       }
     },  
 
-  initPlugins: function() {
+    initPlugins: function() {
       // NivoLightbox - will be changed with something else.
       $('.nivoLightbox').nivoLightbox({
         effect: 'fade',                             // The effect to use when showing the lightbox
@@ -10652,8 +11716,29 @@ return jQuery;
 
       // PLACEHOLDER
       $('input, textarea').placeholder();
-    }
+    },
 
+    // # 3. This is the clock plugin used for the sites counter widget. 
+    initTicker: function() {
+      function second_passed() {
+        $('.clock').removeClass('is-off');
+      }
+      setTimeout(second_passed, 2000)
+
+      var newDate = new Date();
+      newDate.setDate(newDate.getDate());
+
+      setInterval( function() {
+        var hours    = new Date().getHours();
+        var seconds  = new Date().getSeconds();
+        var minutes  = new Date().getMinutes();
+
+        var realTime = ( hours < 10 ? '0' : '' ) + hours + ' : ' + ( minutes < 10 ? '0' : '' ) + minutes + ' : ' + ( seconds < 10 ? '0' : '' ) + seconds
+
+        $('.time').html(realTime);
+        $('.time').attr('data-time', realTime);
+      }, 1000);
+    } 
   }; // # End initialize.
 
 // # 1. Give the body a class of .mobile if views from a mobile device. Very useful later on.
@@ -10729,32 +11814,10 @@ $(document).ready(function() {
     documentWidthOnResize  = utilities.getWindowWidth();
   });
 
-// # 3. This is the clock plugin used for the sites counter widget. 
-  function ticker() {
-    function second_passed() {
-        $('.clock').removeClass('is-off');
-      }
-      setTimeout(second_passed, 2000)
-
-      $('.sw').on('click', function(e) {
-        e.preventDefault();
-        $('.wrap').toggleClass('glitch');
-      });
-
-      var newDate = new Date();
-      newDate.setDate(newDate.getDate());
-
-      setInterval( function() {
-        var hours    = new Date().getHours();
-        var seconds  = new Date().getSeconds();
-        var minutes  = new Date().getMinutes();
-
-        var realTime = ( hours < 10 ? '0' : '' ) + hours + ' : ' + ( minutes < 10 ? '0' : '' ) + minutes + ' : ' + ( seconds < 10 ? '0' : '' ) + seconds
-
-        $('.time').html(realTime);
-        $('.time').attr('data-time', realTime);
-      }, 1000);
-  }
+  $('.sw').on('click', function(e) {
+    e.preventDefault();
+    $('.wrap').toggleClass('glitch');
+  });
 
   // # This triggers when the window has been loaded.
   // # Trigger the progress animation on window load.
@@ -10766,7 +11829,8 @@ $(document).ready(function() {
   // # Equivalent with the $(document).ready(function() {}); expression.
   $(function() {
       initialize.initAnimations();
-      ticker();
+      initialize.initBackgroundAccordingly();
+      initialize.initTicker();
   });
 
   // # Make the elements full screen again.

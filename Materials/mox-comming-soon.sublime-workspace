@@ -1,0 +1,520 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"getWindow",
+				"getWindowHeight()	scripts.js"
+			],
+			[
+				"browser",
+				"browserSync	gulpfile.js"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "/*\nTheme Name: Cany\nDescription: Coming Soon\nAuthor: Bluminethemes\nTheme URI: http://bluminethemes.com/preview/themeforest/html/cany/\nAuthor URI: http://themeforest.net/user/Bluminethemes\nVersion: 1.0.2\n*/\n\n(function($) {\n	\"use strict\";\n\n	// BOOTSTRAP FIX FOR WINPHONE 8 AND IE10\n	if (navigator.userAgent.match(/IEMobile\\/10\\.0/)) {\n		var msViewportStyle = document.createElement('style');\n		msViewportStyle.appendChild(\n			document.createTextNode(\n				'@-ms-viewport{width:auto!important}'\n			)\n		);\n		document.getElementsByTagName(\"head\")[0].appendChild(msViewportStyle);\n	}\n\n	if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {\n		$('body').addClass('mobile');\n	}\n\n	function detectIE() {\n		if (navigator.userAgent.indexOf('MSIE') != -1)\n			var detectIEregexp = /MSIE (\\d+\\.\\d+);/ //test for MSIE x.x\n		else // if no \"MSIE\" string in userAgent\n			var detectIEregexp = /Trident.*rv[ :]*(\\d+\\.\\d+)/ //test for rv:x.x or rv x.x where Trident string exists\n\n		if (detectIEregexp.test(navigator.userAgent)){ //if some form of IE\n			var ieversion=new Number(RegExp.$1) // capture x.x portion and store as a number\n			if (ieversion >= 9) {\n				return true;\n			}\n		}\n		return false;\n	}\n\n	function getWindowWidth() {\n		return Math.max( $(window).width(), window.innerWidth);\n	}\n\n	function getWindowHeight() {\n		return Math.max( $(window).height(), window.innerHeight);\n	}\n	\n	function isTouchSupported() {\n		var msTouchEnabled = window.navigator.msMaxTouchPoints;\n		var generalTouchEnabled = \"ontouchstart\" in document;\n		if (msTouchEnabled || generalTouchEnabled) {\n			return true;\n		}\n		return false;\n	}\n\n	// Preloader\n	function initPreloader() {\n		var preloaderDelay = 350;\n		var	preloaderFadeOutTime = 800;\n\n		function hidePreloader() {\n			var loadingAnimation = $('#loading-animation');\n			var	preloader = $('#preloader');\n\n			loadingAnimation.fadeOut();\n			preloader.delay(preloaderDelay).fadeOut(preloaderFadeOutTime);\n		}\n\n		hidePreloader();\n	}\n	\n	\n	// Animations\n	function initAnimations() {\n		if( !$('body').hasClass('mobile') ) {\n			if( detectIE() ) {\n				$('.animated').css({\n					'display':'block',\n					'visibility': 'visible'\n				});\n			} else {			\n				// Starting Animation on Load\n				$('.animated').each( function() {\n					var elem = $(this);\n					if ( !elem.hasClass('visible') ) {\n						var animationDelay = elem.data('animation-delay');\n						var animation = elem.data('animation');\n						if ( animationDelay ) {\n							setTimeout(function(){\n								elem.addClass( animation + ' visible' );\n							}, animationDelay);\n						} else {\n							elem.addClass( animation + ' visible' );\n						}\n					}\n				});				\n			}\n		}\n	}\n	\n	\n	// Fullscreen Elements\n	function fullscreenElements() {\n		$('.fullscreen-element').each(function(){\n			$(this).css('min-height', getWindowHeight());\n		});\n	}\n	fullscreenElements();\n	\n	\n	// Navigation\n	function initNavigation() {\n		\n		$('.site-nav a').tooltip({\n			placement: 'left'\n		});\n		\n		var section = $('section.on-menu');\n		section.css({\n			'opacity': '0',\n			'visibility': 'hidden',\n			'display': 'none'	\n		});\n		\n		$('#home').css({\n			'opacity': '1',\n			'display': 'block',\n			'visibility': 'visible'\n		});\n		\n		// Move To Section\n		$('a.move-to').on( 'click', function(e) {\n			e.preventDefault();\n			\n			var elem = $(this);\n			var currentSection = $(this).attr('href').substring(1);\n			var section = $('section.on-menu');\n			var customBackground = elem.data('section-background');\n			\n			$('.site-nav a').removeClass('active');\n			$('.site-nav').find('[href=\"#'+ currentSection + '\"]').addClass('active');\n			\n			section.animate({\n				opacity: 0\n			},{\n				duration: 500,\n				easing: 'easeOutQuad',\n				queue: true,\n				complete: function() {\n					$(this).css({\n						'visibility': 'hidden',\n						'display': 'none'	\n					});\n					\n					if( !$('body').hasClass('mobile') ) {\n						if( detectIE() ) {\n							$('.animated').css({\n								'display': 'block',\n								'visibility': 'visible'\n							});\n						} else {			\n							// Remove Animations\n							$('.animated').each( function() {\n								var elem = $(this);\n								var animation = elem.data('animation');\n								if ( elem.hasClass('visible') ) {\n									elem.removeClass( animation + ' visible' );\n								}\n							});\n						}\n					}\n					\n				}\n			});\n			\n			$('#'+ currentSection + '').animate({\n				opacity: 1\n			},{\n				duration: 700,\n				easing: 'easeOutQuad',\n				queue: true,\n				start: function() {\n					$(this).css({\n						'display': 'block',\n						'visibility': 'visible'\n					});\n					\n					if(customBackground){\n						$('.background-layer').removeClass (function (index, css) {\n							return (css.match (/(^|\\s)image\\S+/g) || []).join(' ');\n						});\n						$('.background-layer').addClass(customBackground);\n					}\n					\n					if( !$('body').hasClass('mobile') ) {\n						if( detectIE() ) {\n							$('.animated').css({\n								'display': 'block',\n								'visibility': 'visible'\n							});\n						} else {\n							// Starting Animation on Load\n							$('#'+ currentSection + '').find('.animated').each( function() {\n								var elem = $(this);\n								var animation = elem.data('animation');\n								if ( !elem.hasClass('visible') ) {\n									var animationDelay = elem.data('animation-delay');\n									if ( animationDelay ) {\n										setTimeout(function(){\n											elem.addClass( animation + ' visible' );\n										}, animationDelay);\n									} else {\n										setTimeout(function(){\n											elem.addClass( animation + ' visible' );\n										}, 0);\n									}\n								}\n							});\n						}\n					}\n					\n				}\n			});\n		});\n\n		$('.site-nav').each(function() {\n			var menu = $(this).find('ul');\n			var menuHeight = menu.innerHeight();\n			\n			menu.css('margin-top', -(menuHeight/2));\n			$('.line.vertical.top').css('margin-bottom', menuHeight/2);\n			$('.line.vertical.top').css('margin-bottom', menuHeight/2);\n			$('.line.vertical.bottom').css('margin-top', menuHeight/2);\n		});\n		\n		$('.socials-icons').each(function() {\n			var socialIcons = $(this).find('ul');\n			var socialIconsWidth = socialIcons.innerWidth() + 15;\n			\n			$('.line.horizontal.left').css('margin-right', socialIconsWidth);\n		});\n		\n		// Keyboard Support\n		$(document).keydown(function(e) {\n			if(e.keyCode == 38 || e.keyCode == 39) { \n				e.preventDefault();\n				$('.site-nav a.active').closest('li').next('li').find('a.move-to').trigger('click');			\n			} else if(e.keyCode == 37 || e.keyCode == 40) { \n				e.preventDefault();\n				$('.site-nav a.active').closest('li').prev('li').find('a.move-to').trigger('click');			\n			}\n		});\n		\n	}\n\n	\n	// Animated Gradient\n	function animatedGradient() {\n		var colors = new Array(\n			[62,35,255],\n			[60,255,60],\n			[255,35,98],\n			[45,175,230],\n			[255,0,255],\n			[255,128,0]);\n\n		var step = 0;\n		//color table indices for: \n		// current color left\n		// next color left\n		// current color right\n		// next color right\n		var colorIndices = [0,1,2,3];\n\n		//transition speed\n		var gradientSpeed = 0.002;\n\n		function updateGradient() {\n		  \n			if ( $===undefined ) return;\n		  \n			var c0_0 = colors[colorIndices[0]];\n			var c0_1 = colors[colorIndices[1]];\n			var c1_0 = colors[colorIndices[2]];\n			var c1_1 = colors[colorIndices[3]];\n\n			var istep = 1 - step;\n			var r1 = Math.round(istep * c0_0[0] + step * c0_1[0]);\n			var g1 = Math.round(istep * c0_0[1] + step * c0_1[1]);\n			var b1 = Math.round(istep * c0_0[2] + step * c0_1[2]);\n			var color1 = \"rgb(\"+r1+\",\"+g1+\",\"+b1+\")\";\n\n			var r2 = Math.round(istep * c1_0[0] + step * c1_1[0]);\n			var g2 = Math.round(istep * c1_0[1] + step * c1_1[1]);\n			var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);\n			var color2 = \"rgb(\"+r2+\",\"+g2+\",\"+b2+\")\";\n\n			$('#gradient')\n				.css({background: \"-webkit-gradient(linear, left top, right top, from(\"+color1+\"), to(\"+color2+\"))\"})\n				.css({background: \"-moz-linear-gradient(left, \"+color1+\" 0%, \"+color2+\" 100%)\"});\n			  \n			step += gradientSpeed;\n			if ( step >= 1 ) {\n				step %= 1;\n				colorIndices[0] = colorIndices[1];\n				colorIndices[2] = colorIndices[3];\n				\n				//pick two new target color indices\n				//do not pick the same as the current one\n				colorIndices[1] = ( colorIndices[1] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;\n				colorIndices[3] = ( colorIndices[3] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;\n			}\n		}\n		setInterval(updateGradient,10);\n	}\n	\n	// BACKGROUNDS\n	function initPageBackground() {\n		\n		if($('body').hasClass('mobile')) {\n			$('.video-wrapper, .player').css('display', 'none');	\n		}\n		\n		if( $('body').hasClass('slideshow-background') ) { // SLIDESHOW BACKGROUND\n\n			$(\"body\").backstretch([\n				\"demo/images/image-1.jpg\",\n				\"demo/images/image-2.jpg\",\n				\"demo/images/image-5.jpg\"\n			], {duration: 3000, fade: 1200});\n\n		} else if( $('body').hasClass('kenburns-background') ) { // KENBURNS BACKGROUND\n\n			var displayBackdrops = false;\n			var backgrounds = [\n				{ src: 'demo/images/image-1.jpg', valign: 'top' },\n				{ src: 'demo/images/image-2.jpg', valign: 'top' },\n				{ src: 'demo/images/image-5.jpg', valign: 'top' }\n			];\n\n			$('body').vegas({\n				preload: true,\n				transition: 'swirlLeft2',\n				transitionDuration: 4000,\n				timer: false,\n				delay: 10000,\n				slides: backgrounds,\n				walk: function (nb) {\n					if (displayBackdrops === true) {\n						var backdrop;\n\n						backdrop = backdrops[nb];\n						backdrop.animation  = 'kenburns';\n						backdrop.animationDuration = 20000;\n						backdrop.transition = 'fade';\n						backdrop.transitionDuration = 1000;\n\n						$('body')\n							.vegas('options', 'slides', [ backdrop ])\n							.vegas('next');\n					}\n				}\n			});\n\n		} else if($('body').hasClass('youtube-background')) { // YOUTUBE VIDEO BACKGROUND\n			if($('body').hasClass('mobile')) {\n\n				// Default background on mobile devices\n				$(\"body\").backstretch([\n					\"demo/video/video.jpg\"\n				]);\n\n			} else {\n				$(\".player\").each(function() {\n					$(\".player\").mb_YTPlayer();\n				});\n			}\n		} else if($('body').hasClass('youtube-list-background')) { // YOUTUBE LIST VIDEOS BACKGROUND\n			if($('body').hasClass('mobile')) {\n\n				// Default background on mobile devices\n				$(\"body\").backstretch([\n					\"demo/video/video.jpg\"\n				]);\n\n			} else {\n\n				var videos = [\n					{videoURL: \"0pXYp72dwl0\",containment:'body',autoPlay:true, mute:true, startAt:0,opacity:1, loop:false, ratio:\"4/3\", addRaster:true},\n					{videoURL: \"9d8wWcJLnFI\",containment:'body',autoPlay:true, mute:true, startAt:0,opacity:1, loop:false, ratio:\"4/3\", addRaster:false},\n					{videoURL: \"nam90gorcPs\",containment:'body',autoPlay:true, mute:true, startAt:0,opacity:1, loop:false, ratio:\"4/3\", addRaster:true}\n				];\n\n				$(\".player\").YTPlaylist(videos, true);\n\n			}\n		} else if($('body').hasClass('mobile')) { // MOBILE BACKGROUND - Image background instead of video on mobile devices\n			if($('body').hasClass('video-background')) {\n\n				// Default background on mobile devices\n				$(\"body\").backstretch([\n					\"demo/video/video.jpg\"\n				]);\n\n			}	\n		} else if($('body').hasClass('animated-gradient')) { // MOBILE BACKGROUND - Image background instead of video on mobile devices\n			animatedGradient();\n		}\n	}\n	\n	\n	// Plugins\n	function initPlugins() {\n		\n		// NivoLightbox\n		$('.nivoLightbox').nivoLightbox({\n			effect: 'fade',                             // The effect to use when showing the lightbox\n			theme: 'default',                           // The lightbox theme to use\n			keyboardNav: true,                          // Enable/Disable keyboard navigation (left/right/escape)\n			clickOverlayToClose: true,                  // If false clicking the \"close\" button will be the only way to close the lightbox\n			errorMessage: 'The requested content cannot be loaded. Please try again later.' // Error message when content can't be loaded\n		});\n\n		// RESPONSIVE VIDEO - FITVIDS\n		$(\".video-container\").fitVids();\n\n		// FLEXSLIDER\n		$('.flexslider').flexslider({\n			animation: \"fade\",\n			animationLoop: true,\n			slideshowSpeed: 7000,\n			animationSpeed: 600,\n			controlNav: false,\n			directionNav: false,\n			keyboard: false,\n			start: function(slider){\n				$('body').removeClass('loading');\n			}\n		});\n\n		// COUNTDOWN\n		$('#clock').countdown('2015/08/1 12:00:00').on('update.countdown', function(event) {\n			var $this = $(this).html(event.strftime('<div class=\"counter-container\"><div class=\"counter-box first\"><div class=\"number\">%-D</div><span>Day%!d</span></div><div class=\"counter-box\"><div class=\"number\">%H</div><span>Hours</span></div><div class=\"counter-box\"><div class=\"number\">%M</div><span>Minutes</span></div><div class=\"counter-box last\"><div class=\"number\">%S</div><span>Seconds</span></div></div>'\n			));\n		});\n\n		// MAILCHIMP\n		$('.mailchimp').ajaxChimp({\n			callback: mailchimpCallback,\n			url: \"//bluminethemes.us9.list-manage.com/subscribe/post?u=dae5eaf00c5b131b0e3561c00&amp;id=9809da9e33\" //Replace this with your own mailchimp post URL. Don't remove the \"\". Just paste the url inside \"\".  \n		});\n\n		function mailchimpCallback(resp) {\n			 if (resp.result === 'success') {\n				$('.success-message').html(resp.msg).fadeIn(1000);\n				$('.error-message').fadeOut(500);\n\n			} else if(resp.result === 'error') {\n				$('.error-message').html(resp.msg).fadeIn(1000);\n			}  \n		}\n\n		$('#email').focus(function(){\n			$('.error-message').fadeOut();\n			$('.success-message').fadeOut();\n		});\n\n		$('#email').keydown(function(){\n			$('.error-message').fadeOut();\n			$('.success-message').fadeOut();\n		});\n\n		$(\"#email\").on( 'click', function() {\n			$(\"#email\").val('');\n		});\n\n		// PLACEHOLDER\n		$('input, textarea').placeholder();\n\n	}\n	\n\n	/* CONTACT FORM */\n	function initContactForm() {\n\n		var scrollElement = $('html,body'),\n			contactForm = $('.contact-form'),\n			form_msg_timeout;\n\n		contactForm.on( 'submit', function() {\n\n			var requiredFields = $(this).find('.required'),\n				formFields = $(this).find('input, textarea'),\n				formData = contactForm.serialize(),\n				formAction = $(this).attr('action'),\n				formSubmitMessage = $('.response-message');\n\n			requiredFields.each(function() {\n				if( $(this).val() === \"\" ) {\n					$(this).addClass('input-error');\n				} else {\n					$(this).removeClass('input-error');\n				}\n\n			});\n\n			function validateEmail(email) { \n				var exp = /^(([^<>()[\\]\\\\.,;:\\s@\\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\\"]+)*)|(\\\".+\\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$/;\n				return exp.test(email);\n			}\n\n			var emailField = $('.contact-form-email');\n\n			if( !validateEmail(emailField.val()) ) {\n\n				emailField.addClass(\"input-error\");\n\n			}\n\n			if ($(\".contact-form :input\").hasClass(\"input-error\")) {\n				return false;\n			} else {\n\n				clearTimeout(form_msg_timeout);\n\n				$.post(formAction, formData, function(data) {\n					formSubmitMessage.text(data);\n\n					formFields.val('');\n\n					form_msg_timeout = setTimeout(function() {\n						formSubmitMessage.slideUp();\n					}, 5000);\n				});\n\n			}\n\n			return false;\n\n		});\n\n	}\n	initContactForm();\n	\n	\n	// WINDOW.LOAD FUNCTION\n	$(window).load(function() {\n		initPreloader();\n	});\n	\n	// DOCUMENT.READY FUNCTION\n	jQuery(document).ready(function($) {\n		initAnimations();\n		fullscreenElements();\n		initPageBackground();\n		initNavigation();\n		initPlugins();\n		initContactForm();\n	});\n	\n	// WINDOW.RESIZE FUNCTION\n	$(window).on('resize', function () {\n		fullscreenElements();\n	});\n\n})(jQuery);",
+			"settings":
+			{
+				"buffer_size": 15361,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/iulia/Desktop/Mox/.gitignore",
+			"settings":
+			{
+				"buffer_size": 211,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 400.0,
+		"last_filter": "js",
+		"selected_items":
+		[
+			[
+				"js",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"floobits user",
+				"Floobits - List Users"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 480.0
+	},
+	"console":
+	{
+		"height": 307.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = 'eb2297e1a458f27d836c04bb0cbaf282' + 'd0e7a3098092775ccb37ca9d6b2e4b7d'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/C/Users/iulia/Desktop/Mox",
+		"/C/Users/iulia/Desktop/Mox/Project Files",
+		"/C/Users/iulia/Desktop/Mox/Project Files/builds",
+		"/C/Users/iulia/Desktop/Mox/Project Files/builds/development",
+		"/C/Users/iulia/Desktop/Mox/Project Files/builds/development/images",
+		"/C/Users/iulia/Desktop/Mox/Project Files/builds/production",
+		"/C/Users/iulia/Desktop/Mox/Project Files/components",
+		"/C/Users/iulia/Desktop/Mox/Project Files/components/bower",
+		"/C/Users/iulia/Desktop/Mox/Project Files/components/bower/bootstrap-sass/assets",
+		"/C/Users/iulia/Desktop/Mox/Project Files/components/bower/bootstrap-sass/assets/stylesheets/bootstrap",
+		"/C/Users/iulia/Desktop/Mox/Project Files/components/sass",
+		"/C/Users/iulia/Desktop/Mox/Project Files/components/scripts",
+		"/C/Users/iulia/Desktop/Mox/Project Files/css"
+	],
+	"file_history":
+	[
+		"/C/Users/iulia/Desktop/Mox/Materials/scram_plan.md",
+		"/C/Users/iulia/Desktop/Mox/Project Files/bower.json",
+		"/C/Users/iulia/Desktop/Mox/Project Files/components/scripts/scripts.js",
+		"/C/Users/iulia/Desktop/Mox/.gitignore",
+		"/C/Users/iulia/Desktop/Mox/Project Files/gulpfile.js",
+		"/C/Users/iulia/Desktop/Mox/Project Files/builds/development/images/.gitkeep",
+		"/C/Users/iulia/Desktop/Mox/Project Files/components/sass/_glitchEffect.scss",
+		"/C/Users/iulia/Desktop/Mox/Project Files/builds/development/css/styles.css",
+		"/C/Users/iulia/Desktop/Mox/Project Files/components/bower/bootstrap-sass/assets/javascripts/bootstrap/transition.js",
+		"/C/Users/iulia/Desktop/Mox/Project Files/components/bower/bootstrap-sass/assets/javascripts/bootstrap/popover.js",
+		"/C/Users/iulia/Desktop/Mox/Project Files/components/sass/_spinner.scss",
+		"/C/Users/iulia/Desktop/Mox/Project Files/components/sass/_variables.scss",
+		"/C/Users/iulia/Desktop/Mox/Project Files/components/sass/styles.scss",
+		"/C/Users/iulia/Desktop/Mox/Project Files/builds/development/index.html",
+		"/C/Users/iulia/Desktop/Mox/Project Files/builds/development/js/script.js",
+		"/C/Users/iulia/Desktop/Mox/Project Files/components/bower/bootstrap-sass/assets/stylesheets/_bootstrap.scss",
+		"/C/Users/iulia/Desktop/Mox/Project Files/components/bower/animateCSS/dist/jquery.animatecss.js",
+		"/C/Users/iulia/Desktop/Mox/Project Files/components/sass/_general.scss",
+		"/C/Users/iulia/Desktop/Mox/Project Files/css/styles.css",
+		"/C/Users/iulia/Desktop/Mox/Project Files/components/_general.scss",
+		"/C/Users/iulia/Desktop/Mox/Project Files/node_modules/bower/node_modules/request/node_modules/tough-cookie/test/jar_serialization_test.js",
+		"/C/Users/iulia/Desktop/Mox/Demo Builds/.gitkeep",
+		"/C/Users/iulia/Desktop/Mox/Project Files/.bowerrc",
+		"/C/Users/iulia/Desktop/Mox/Project Files/components/bower/.gitkeep",
+		"/C/Users/iulia/Desktop/Mox/Project Files/builds/production/index.html",
+		"/C/Users/iulia/Desktop/Mox/README.md",
+		"/C/Users/iulia/Desktop/Mox/Project Files/package.json",
+		"/C/Users/iulia/Desktop/Mox/Project Files/builds/development/js/scripts.js",
+		"/C/Users/iulia/Desktop/Mox/Project Files/.gitignore",
+		"/C/Users/iulia/Desktop/Mox/Project Files/GulpBoilerplate/bower.json",
+		"/C/Users/iulia/Desktop/Mox/Project Files/GulpBoilerplate/package.json",
+		"/C/Users/iulia/Desktop/Mox/Documentation/index.html",
+		"/C/Users/iulia/Desktop/Mox/Materials/ideas.md",
+		"/C/Users/iulia/Work/ngAudio/app/angular.audio.js",
+		"/C/Users/iulia/Work/ngAudio/audioplayer.sublime-project",
+		"/C/Program Files (x86)/Crysis 3/system.cfg",
+		"/C/Users/iulia/Work/floobits/Boyd/Admin-Dashboard/kali/directives/draggable/draggable.js",
+		"/C/Users/iulia/Work/floobits/Boyd/Admin-Dashboard/kali/gulpfile.js",
+		"/C/Users/iulia/Work/floobits/Boyd/Admin-Dashboard/kali/directives/blur/blur.scss",
+		"/C/Users/iulia/Work/floobits/Boyd/Admin-Dashboard/kali/directives/blur/blur.js",
+		"/C/Users/iulia/Work/floobits/Boyd/Admin-Dashboard/gulpfile.js",
+		"/C/Users/iulia/Work/floobits/Boyd/Admin-Dashboard/kali/scripts/scripts.js",
+		"/C/Users/iulia/Work/floobits/Boyd/Admin-Dashboard/kali/directives/datePicker/datePicker.scss",
+		"/C/Users/iulia/Work/floobits/Boyd/Admin-Dashboard/kali/directives/datePicker/JustDirective.js",
+		"/C/php/php.ini",
+		"/C/Users/iulia/Work/floobits/Boyd/Admin-Dashboard/kali/bower.json",
+		"/C/Users/iulia/Work/floobits/Boyd/Admin-Dashboard/kali/package.json",
+		"/C/Users/iulia/floobits/welcome.md",
+		"/C/Users/iulia/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/F/Circle of Friends (1995).English.srt"
+	],
+	"find":
+	{
+		"height": 46.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"init",
+			"demo",
+			".ion-alert:before { content: \"\\f101\"; }",
+			".hidden {\n  display: none !important;\n}",
+			"jshint",
+			"modal",
+			"Popover",
+			"over",
+			"bootstrap",
+			"popover",
+			"assets",
+			"fonts",
+			"background",
+			"initPageBackground",
+			"jsSources",
+			"static",
+			"initprogressanimation",
+			"fullHeightElements",
+			"initAnimations",
+			"initAnimations ",
+			"getWindowWidth",
+			"initProgressAnimation",
+			"hidePreloader",
+			"animated",
+			".animated",
+			"builds/development/",
+			"builds/development//",
+			"orbit",
+			"initPreloader",
+			"mobile",
+			"compass",
+			"initAnimations",
+			"isTouchSupported",
+			"getWindowWidth",
+			"getWindowHeight",
+			"getWindowWidth",
+			"development",
+			"connect",
+			"compass",
+			"gulp-compass",
+			"coffee",
+			"browser",
+			"load",
+			"top",
+			"on('change', browserSync.reload)",
+			"gulp",
+			"extension_dir",
+			"extension_dir = \"C:phpext\""
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 15361,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								206,
+								206
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"auto_complete": false,
+							"bh_regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content"
+							],
+							"default_dir": "C:\\Users\\iulia\\Desktop\\Mox",
+							"incomplete_sync": null,
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/C/Users/iulia/Desktop/Mox/.gitignore",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 211,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								211,
+								211
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content"
+							],
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 39.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.sftp":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "mox-comming-soon.sublime-project",
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"bowr.",
+				"Project Files\\bower.json"
+			],
+			[
+				"js",
+				"Project Files\\node_modules\\bower\\node_modules\\request\\node_modules\\tough-cookie\\test\\jar_serialization_test.js"
+			],
+			[
+				"gulpfile",
+				"Project Files\\gulpfile.js"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"C:\\Users\\iulia\\Work\\floobits\\Boyd\\Admin-Dashboard\\admin-dashboard.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 402.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
