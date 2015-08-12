@@ -32,6 +32,7 @@
     "jquery-backstretch": "~2.0.4",
     "animate.css": "~3.4.0",
     "animateCSS": "~1.2.1",
-    "bootstrap-sass": "~3.3.5"
+    "bootstrap-sass": "~3.3.5",
+    "fullpage.js": "~2.6.8"
   }
 }

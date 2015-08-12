@@ -38,6 +38,7 @@ if(env === 'development') {
 	sassStyle = 'compressed';
 }
 
+// # What dev env are you currently in ?
 console.warn('Current node env is ', outputDir);
 
 // ##################################################################################################################################
@@ -52,6 +53,7 @@ console.warn('Current node env is ', outputDir);
 
     jsSources	  = ['components/bower/jquery/dist/jquery.js',
     				 'components/bower/animateCSS/dist/jquery.animatecss.js',
+    				 'compoments/bower/jquery-backstretch/libs/jquery-loader.js',
     				 'components/bower/jquery-backstretch/jquery.backstretch.js',
     				 'components/bower/vegas/dist/vegas.js',
     				 bootsrapPath + 'javascripts/bootstrap/transition.js',
@@ -59,7 +61,10 @@ console.warn('Current node env is ', outputDir);
     				 bootsrapPath + 'javascripts/bootstrap/popover.js',
     				 bootsrapPath + 'javascripts/bootstrap/modal.js',
     				 bootsrapPath + 'javascripts/bootstrap/alert.js',
-				 	 'components/scripts/*.js'];
+				 	 bowerPath + 'fullpage.js/vendors/jquery-easings.min.js',
+	 	 			 bowerPath + 'fullpage.js/vendors/jquery.slimscroll.js',
+	 	 			 bowerPath + 'fullpage.js/jquery.fullPage.js',
+	 	 			 'components/scripts/*.js'];
 
  	fontsSources  = [bootsrapPath    + 'fonts/bootstrap/*.{ttf,woff,woff2,eot,svg}',
 				     fontAwesomePath + 'fonts/*.{ttf,woff,woff2,eot,svg,otf}',
@@ -67,7 +72,11 @@ console.warn('Current node env is ', outputDir);
 				     jqmbytp         + 'font/*.{ttf,woff,eot}'];
 
  	cssSources 	  = [bowerPath + 'vegas/dist/vegas.css',
-					 bowerPath + jqmbytp + 'jquery.mb.YTPlayer.min.css']
+					 bowerPath + jqmbytp + 'jquery.mb.YTPlayer.min.css',
+					 fontAwesomePath + 'css/font-awesome.css',
+					 fontAwesomePath + 'css/font-awesome.css.map',
+					 bowerPath + 'fullpage.js/jquery.fullPage.css',
+					 bowerPath + 'animate.css/animate.css'];
 
  	sassSources	  = [bootsrapPath + 'stylesheets/_bootstrap.scss',  
 					'components/sass/styles.scss'];
@@ -77,7 +86,7 @@ console.warn('Current node env is ', outputDir);
  	jsonSources   = [outputDir + 'js/*.json'];
 
 // ##################################################################################################################################
-// JavaScript Task
+// JavaScript Task 
 // ##################################################################################################################################
 
 gulp.task('js', function() {
@@ -137,8 +146,7 @@ gulp.task('compass', function() {
 gulp.task('static', function() {
 	gulp.src('builds/development/*.html')
 		.pipe(gulpif(prod, minifyhtml()))
-		.pipe(gulpif(prod, gulp.dest(outputDir)))
-		.pipe(connect.reload());
+		.pipe(gulpif(prod, gulp.dest(outputDir)));
 });
 
 // ##################################################################################################################################
@@ -178,8 +186,7 @@ gulp.task('json', function() {
 
 gulp.task('images', function() {
 	gulp.src('builds/development/images/**/*.*')
-		.pipe(gulpif(prod, gulp.dest('builds/production/images/')))
-		.pipe(connect.reload());
+		.pipe(gulpif(prod, gulp.dest('builds/production/images/')));
 });
 
 // ##################################################################################################################################
@@ -195,7 +202,7 @@ gulp.task('watch', function() {
 });
 
 // ##################################################################################################################################
-// Connect (~ Server ~) Task
+// Connect (~ Server ~) Task - currently using browser-sync
 // ##################################################################################################################################
 
 gulp.task('connect', function() {
