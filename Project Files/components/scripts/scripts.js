@@ -225,22 +225,22 @@
 
       function mailchimpCallback(resp) {
          if (resp.result === 'success') {
-          $('.success-message').html(resp.msg).fadeIn(1000);
-          $('.error-message').fadeOut(500);
+          $('.success-response').html(resp.msg).fadeIn(1200);
+          $('.error-response').fadeOut(500);
 
         } else if(resp.result === 'error') {
-          $('.error-message').html(resp.msg).fadeIn(1000);
+          $('.error-response').html(resp.msg).fadeIn(1200);
         }  
       }
 
       $('#email').focus(function(){
-        $('.error-message').fadeOut();
-        $('.success-message').fadeOut();
+        $('.error-response').fadeOut();
+        $('.success-response').fadeOut();
       });
 
       $('#email').keydown(function(){
-        $('.error-message').fadeOut();
-        $('.success-message').fadeOut();
+        $('.error-response').fadeOut();
+        $('.success-response').fadeOut();
       });
 
       $("#email").on( 'click', function() {

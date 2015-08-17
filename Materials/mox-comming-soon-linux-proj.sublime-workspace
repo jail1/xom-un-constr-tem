@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"bower",
+				"bowerPath"
+			],
+			[
+				"jquer",
+				"jquery-backstretch"
+			],
+			[
 				"getWindow",
 				"getWindowHeight()	scripts.js"
 			],
@@ -15,6 +23,38 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "/home/iulian/Desktop/xom-un-constr-tem/Project Files/builds/development/index.html",
+			"settings":
+			{
+				"buffer_size": 2041,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/iulian/Desktop/xom-un-constr-tem/Project Files/builds/development/css/vendor/jquery.fullPage.css",
+			"settings":
+			{
+				"buffer_size": 4322,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/home/iulian/Desktop/xom-un-constr-tem/Project Files/components/sass/styles.scss",
+			"settings":
+			{
+				"buffer_size": 382,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/iulian/Desktop/xom-un-constr-tem/Project Files/components/scripts/scripts.js",
+			"settings":
+			{
+				"buffer_size": 15711,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -65,10 +105,17 @@
 	},
 	"expanded_folders":
 	[
-		"/home/iulian/Desktop/xom-un-constr-tem/Materials/C:\\Users\\iulia\\Desktop\\Mox"
+		"/home/iulian/Desktop/xom-un-constr-tem",
+		"/home/iulian/Desktop/xom-un-constr-tem/Materials",
+		"/home/iulian/Desktop/xom-un-constr-tem/Materials/Inspiration"
 	],
 	"file_history":
 	[
+		"/home/iulian/Desktop/xom-un-constr-tem/Project Files/components/bower/fullpage.js/jquery.fullPage.js",
+		"/home/iulian/Desktop/xom-un-constr-tem/Project Files/components/scripts/scripts.js",
+		"/home/iulian/Desktop/xom-un-constr-tem/Project Files/gulpfile.js",
+		"/home/iulian/Desktop/xom-un-constr-tem/Project Files/builds/development/index.html",
+		"/home/iulian/Desktop/xom-un-constr-tem/Project Files/builds/development/css/styles.css",
 		"/C/Users/iulia/Desktop/Mox/.gitignore",
 		"/C/Users/iulia/Desktop/Mox/Materials/scram_plan.md",
 		"/C/Users/iulia/Desktop/Mox/Project Files/bower.json",
@@ -122,7 +169,7 @@
 	],
 	"find":
 	{
-		"height": 46.0
+		"height": 38.0
 	},
 	"find_in_files":
 	{
@@ -136,6 +183,17 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"message",
+			"response",
+			"1000",
+			"message",
+			"255",
+			"background",
+			"background: ",
+			"fullpage",
+			"initialize",
+			"navbar",
+			"nav",
 			"init",
 			"demo",
 			".ion-alert:before { content: \"\\f101\"; }",
@@ -201,8 +259,138 @@
 	"groups":
 	[
 		{
+			"selected": 3,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "/home/iulian/Desktop/xom-un-constr-tem/Project Files/builds/development/index.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2041,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1832,
+								1832
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/home/iulian/Desktop/xom-un-constr-tem/Project Files/builds/development/css/vendor/jquery.fullPage.css",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4322,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3316,
+								3316
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/CSS/CSS.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1991.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/home/iulian/Desktop/xom-un-constr-tem/Project Files/components/sass/styles.scss",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 382,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								378,
+								378
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/SCSS/SCSS.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/home/iulian/Desktop/xom-un-constr-tem/Project Files/components/scripts/scripts.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 15711,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								12966,
+								12966
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4406.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -246,7 +434,7 @@
 		"height": 0.0
 	},
 	"pinned_build_system": "",
-	"project": "mox-comming-soon.sublime-project",
+	"project": "mox-comming-soon-linux-proj.sublime-project",
 	"replace":
 	{
 		"height": 64.0
@@ -258,6 +446,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"fullpagejs",
+				"Project Files/components/bower/fullpage.js/jquery.fullPage.js"
+			],
 			[
 				"bowr.",
 				"Project Files\\bower.json"
@@ -281,7 +473,7 @@
 		[
 			[
 				"",
-				"~/Desktop/xom-un-constr-tem/Materials/mox-comming-soon-linux-proj.sublime-project"
+				"~/Desktop/shef_de_ferma.sublime-project"
 			]
 		],
 		"width": 380.0
@@ -303,7 +495,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 402.0,
+	"side_bar_width": 364.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
